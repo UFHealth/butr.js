@@ -1,0 +1,20 @@
+{
+  "name": "butr",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:marker": "rollup butr-marker.js -o butr-marker.min.js --config",
+    "build:to": "rollup butr-to.js -o butr-to.min.js --config"
+  },
+  "author": "Bill Columbia",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-latest": "^6.24.1",
+    "rollup": "^0.45.1",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1"
+  }
+}
