@@ -1,5 +1,7 @@
 # Butr
 
+![Butr.gif](Butr.gif)
+
 ## `Butr.marker() usage`
 
 ```javascript
@@ -16,7 +18,14 @@ Butr.marker({
 })
 ```
 
+### HTML Classes
 
+You will need to add a few classes/ids to your markup as well:
+
+- Navigation element that contains links to attach marker to: `.js-butr-nav`
+- Links inside that navigation element: `.js-butr-link`
+- Each section that should be tracked: `.js-butr-section`
+- Sections should have an id that matches a links href
 
 ## `Butr.to() usage`
 
