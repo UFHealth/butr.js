@@ -3,7 +3,9 @@ const to = (options = {}) => {
       distance,
       counter,
       step,
-      el = options.el || document.body,
+      el = options.el
+        ? document.querySelector(options.el)
+        : document.body,
       location = options.location || 0,
       direction = options.direction || 'y',
       duration = options.duration || 800,

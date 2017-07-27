@@ -6,13 +6,22 @@ const marker = (options = {}) => {
       ignoreScrollEvents = false,
       useTo = options.useTo || false,
       duration = options.duration || 400,
-      container = options.container || document.body,
-      nav = document.querySelector('.js-butr-nav'),
-      links = document.querySelectorAll('.js-butr-link'),
-      sections = document.querySelectorAll('.js-butr-section')
+      container = options.container
+        ? document.querySelector(options.container)
+        : document.body,
+      nav = document.querySelector('.js-butr-nav') || false,
+      links = document.querySelectorAll('.js-butr-link') || false,
+      sections = document.querySelectorAll('.js-butr-section') || false
 
   const getDistanceFromTop = el => {
     return el.offsetTop - container.offsetTop + el.offsetHeight
+  }
+
+  const checkRequiredElements = () => {
+    if (!nav || !links || !sections) {
+      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.Marker')
+      return false
+    } else return true
   }
 
   const createMarker = () => {
@@ -96,7 +105,7 @@ const marker = (options = {}) => {
     window.addEventListener('scroll', animationLoop)
   }
 
-  init()
+  if (checkRequiredElements()) init()
 }
 
 if (!window.Butr) window.Butr = {}
