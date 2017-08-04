@@ -1,5 +1,6 @@
 # Butr
 
+![Butr.gif](Butr.png)
 ![Butr.gif](Butr.gif)
 
 ## `Butr.marker() usage`
