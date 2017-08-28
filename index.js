@@ -1,1 +1,1 @@
-module.exports = require('dist/butr');
+module.exports = require('./dist/butr');
