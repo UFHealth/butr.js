@@ -10,7 +10,7 @@ const To = (options = {}) => {
       step,
       el = options.el
         ? document.querySelector(options.el)
-        : document.body,
+        : document.scrollingElement || document.documentElement,
       location = options.location || 0,
       direction = options.direction || 'y',
       duration = options.duration || 800,
@@ -71,7 +71,7 @@ const Marker = (options = {}) => {
       duration = options.duration || 400,
       container = options.container
         ? document.querySelector(options.container)
-        : document.body,
+        : document.scrollingElement || document.documentElement,
       nav = document.querySelector('.js-butr-nav') || false,
       links = document.querySelectorAll('.js-butr-link') || false,
       sections = document.querySelectorAll('.js-butr-section') || false
