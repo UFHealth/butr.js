@@ -3,6 +3,8 @@
 ![Butr.gif](Butr.png)
 ![Butr.gif](Butr.gif)
 
+** Warning - this will not work with out an NPM install now, I will get a minified drop in version ready soon, though. Also the example will not work...**
+
 ## `Butr.marker() usage`
 
 ```javascript
