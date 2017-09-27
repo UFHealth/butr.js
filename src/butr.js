@@ -82,6 +82,7 @@ const Marker = (options = {}) => {
       safeToUpdate = true,
       ignoreScrollEvents = false,
       useTo = options.useTo || false,
+      callback = options.callback || null,
       duration = options.duration || 400,
       container = options.container
         ? document.querySelector(options.container)
@@ -129,6 +130,7 @@ const Marker = (options = {}) => {
     e.preventDefault()
     To({
       target: hash,
+      callback,
       markerCallback: () => {
         ignoreScrollEvents = false
       }
