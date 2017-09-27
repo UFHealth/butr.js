@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
-	(global.butr = factory());
+	(global.Butr = factory());
 }(this, (function () { 'use strict';
 
 /**
@@ -9,7 +9,7 @@
  * @param  {Object} options
  * @return
  */
-var To = function To() {
+var to = function to() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var start = void 0,
@@ -80,7 +80,7 @@ var To = function To() {
  * @param  {Object} options
  * @return
  */
-var Marker = function Marker() {
+var marker = function marker() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var top = void 0,
@@ -196,8 +196,8 @@ var Marker = function Marker() {
 };
 
 var butr = {
-  To: To,
-  Marker: Marker
+  to: to,
+  marker: marker
 };
 
 return butr;

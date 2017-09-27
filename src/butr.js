@@ -3,7 +3,7 @@
  * @param  {Object} options
  * @return
  */
-const To = (options = {}) => {
+const to = (options = {}) => {
   let start,
       distance,
       counter,
@@ -75,7 +75,7 @@ const To = (options = {}) => {
  * @param  {Object} options
  * @return
  */
-const Marker = (options = {}) => {
+const marker = (options = {}) => {
   let top,
       topMostSection,
       marker,
@@ -187,6 +187,6 @@ const Marker = (options = {}) => {
 }
 
 export default {
-  To,
-  Marker
+  to,
+  marker
 }
