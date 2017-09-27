@@ -17,15 +17,26 @@ var To = function To() {
       counter = void 0,
       step = void 0,
       el = options.el ? document.querySelector(options.el) : document.scrollingElement || document.documentElement,
-      location = options.location || 0,
+      target = options.target || 0,
       direction = options.direction || 'y',
       duration = options.duration || 800,
+      keepHash = options.keepHash || true,
       userCallback = options.callback || null,
       markerCallback = options.markerCallback || null;
 
-  var getLocation = function getLocation() {
+  var getCurrentPosition = function getCurrentPosition() {
     if (direction === 'x') return el.scrollLeft;
     if (direction === 'y') return el.scrollTop;
+  };
+
+  var getTargetPosition = function getTargetPosition() {
+    if (target[0] === '#') {
+      var targetEl = document.getElementById(target.substr(1));
+      if (targetEl && direction === 'x') return targetEl.offsetLeft;
+      if (targetEl && direction === 'y') return targetEl.offsetTop;
+      return 0;
+    }
+    return target;
   };
 
   var easing = function easing(t, b, c, d) {
@@ -51,10 +62,13 @@ var To = function To() {
   };
 
   var init = function init() {
-    start = getLocation();
-    distance = location - start;
+    start = getCurrentPosition();
+    distance = getTargetPosition() - start;
     counter = 0;
     step = 33; // 30~ FPS
+    if (keepHash && target[0] === '#') {
+      history.pushState({}, '', target);
+    }
     animationLoop();
   };
 
@@ -110,9 +124,8 @@ var Marker = function Marker() {
     var _loop = function _loop(i) {
       links[i].addEventListener('click', function (e) {
         ignoreScrollEvents = true;
-        var linkHash = links[i].hash.replace('#', '');
-        setActive(linkHash);
-        if (useTo) setupSmoothLinks(e, linkHash);
+        setActive(links[i].hash);
+        if (useTo) setupSmoothLink(e, links[i].hash);
       });
     };
 
@@ -121,10 +134,10 @@ var Marker = function Marker() {
     }
   };
 
-  var setupSmoothLinks = function setupSmoothLinks(e, linkHash) {
+  var setupSmoothLink = function setupSmoothLink(e, hash) {
     e.preventDefault();
     To({
-      location: document.getElementById(linkHash).offsetTop,
+      target: hash,
       markerCallback: function markerCallback() {
         ignoreScrollEvents = false;
       }
@@ -137,16 +150,16 @@ var Marker = function Marker() {
       if (distance > top) {
         if (topMostSection !== sections[i]) {
           topMostSection = sections[i];
-          setActive(topMostSection.id);
+          setActive('#' + topMostSection.id);
         }
         break;
       }
     }
   };
 
-  var setActive = function setActive(id) {
+  var setActive = function setActive(hash) {
     var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');
-    var currentlyActive = document.querySelector('.js-butr-link[href="#' + id + '"]');
+    var currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]');
     if (currentlyActive !== previouslyActive) {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active');
       currentlyActive.classList.add('js-butr-active');
