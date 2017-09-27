@@ -3,21 +3,24 @@
 ![Butr.gif](Butr.png)
 ![Butr.gif](Butr.gif)
 
-** Warning - this will not work with out an NPM install now, I will get a minified drop in version ready soon, though. Also the example will not work...**
-
-## `Butr.marker() usage`
+## `Butr.marker()`
 
 ```javascript
 Butr.marker({
-  // When scrolling to section animate with Butr.to
+  // When scrolling to section animate with Butr.to()
   // DEFAULT === false
   useTo: true,
+  // Callback to pass to Butr.to(), if used
+  // DEFAULT === none
+  callback: function () {
+    console.log('Done scrolling!')
+  }
   // Animation duration for marker movement
   // DEFAULT === 400
   duration: 800,
   // Container that is a parent element of sections
   // DEFAULT === document.body or similar based on browser
-  container: '.container',
+  container: '.container'
 })
 ```
 
@@ -30,16 +33,16 @@ You will need to add a few classes/ids to your markup as well:
 - Each section that should be tracked: `.js-butr-section`
 - Sections should have an id that matches a links href
 
-## `Butr.to() usage`
+## `Butr.to()`
 
 ```javascript
 Butr.to({
   // Element to scroll
   // DEFAULT === document.body or similar based on browser
   el: '.limited-height',
-  // Location to scrollTo (from the top or left)
+  // Location to scroll to -- can be an integer position or a '#hash-target'
   // DEFAULT === 0
-  location: myElement.offsetTop,
+  target: 0,
   // Direction of scrolling 'x' or 'y'
   // DEFAULT === 'y'
   direction: 'x',

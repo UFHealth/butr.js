@@ -1,8 +1,11 @@
 {
   "name": "butr",
-  "version": "0.4.0-dev",
+  "version": "0.4.0",
   "description": "Scrollz like butter",
-  "author": "Bill Columbia",
+  "contributors": [
+    "Bill Columbia <hello@billcolumbia.com>",
+    "Kyle Tucker <kyleatucker@gmail.com>"
+  ],
   "license": "MIT",
   "repository": "github:ufhealth/butr",
   "main": "index.js",
