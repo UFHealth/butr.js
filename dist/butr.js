@@ -89,6 +89,7 @@ var Marker = function Marker() {
       safeToUpdate = true,
       ignoreScrollEvents = false,
       useTo = options.useTo || false,
+      callback = options.callback || null,
       duration = options.duration || 400,
       container = options.container ? document.querySelector(options.container) : document.scrollingElement || document.documentElement,
       nav = document.querySelector('.js-butr-nav') || false,
@@ -138,6 +139,7 @@ var Marker = function Marker() {
     e.preventDefault();
     To({
       target: hash,
+      callback: callback,
       markerCallback: function markerCallback() {
         ignoreScrollEvents = false;
       }
