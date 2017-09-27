@@ -14,7 +14,7 @@ Butr.marker({
   // DEFAULT === none
   callback: function () {
     console.log('Done scrolling!')
-  }
+  },
   // Animation duration for marker movement
   // DEFAULT === 400
   duration: 800,
