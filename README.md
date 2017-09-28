@@ -43,6 +43,9 @@ Butr.to({
   // Location to scroll to -- can be an integer position or a '#hash-target'
   // DEFAULT === 0
   target: 0,
+  // If target is a hash, whether to update the hash in the URL
+  // DEFAULT === true
+  keepHash: true,
   // Direction of scrolling 'x' or 'y'
   // DEFAULT === 'y'
   direction: 'x',
