@@ -3,7 +3,7 @@
  * @param  {Object} options
  * @return
  */
-const To = (options = {}) => {
+const to = (options = {}) => {
   let start,
       distance,
       counter,
@@ -11,15 +11,26 @@ const To = (options = {}) => {
       el = options.el
         ? document.querySelector(options.el)
         : document.scrollingElement || document.documentElement,
-      location = options.location || 0,
+      target = options.target || 0,
       direction = options.direction || 'y',
       duration = options.duration || 800,
+      keepHash = options.keepHash || true,
       userCallback = options.callback || null,
       markerCallback = options.markerCallback || null
 
-  const getLocation = () => {
+  const getCurrentPosition = () => {
     if (direction === 'x') return el.scrollLeft
     if (direction === 'y') return el.scrollTop
+  }
+
+  const getTargetPosition = () => {
+    if (target[0] === '#') {
+      let targetEl = document.getElementById(target.substr(1))
+      if (targetEl && direction === 'x') return targetEl.offsetLeft
+      if (targetEl && direction === 'y') return targetEl.offsetTop
+      return 0
+    }
+    return target
   }
 
   const easing = (t, b, c, d) => {
@@ -46,10 +57,13 @@ const To = (options = {}) => {
   }
 
   const init = () => {
-    start = getLocation()
-    distance = location - start
+    start = getCurrentPosition()
+    distance = getTargetPosition() - start
     counter = 0
     step = 33 // 30~ FPS
+    if (keepHash && target[0] === '#') {
+      history.pushState({}, '', target)
+    }
     animationLoop()
   }
 
@@ -61,13 +75,14 @@ const To = (options = {}) => {
  * @param  {Object} options
  * @return
  */
-const Marker = (options = {}) => {
+const marker = (options = {}) => {
   let top,
       topMostSection,
       marker,
       safeToUpdate = true,
       ignoreScrollEvents = false,
       useTo = options.useTo || false,
+      callback = options.callback || null,
       duration = options.duration || 400,
       container = options.container
         ? document.querySelector(options.container)
@@ -105,17 +120,17 @@ const Marker = (options = {}) => {
     for (let i = 0; i < links.length; i++) {
       links[i].addEventListener('click', e => {
         ignoreScrollEvents = true
-        let linkHash = links[i].hash.replace('#', '')
-        setActive(linkHash)
-        if (useTo) setupSmoothLinks(e, linkHash)
+        setActive(links[i].hash)
+        if (useTo) setupSmoothLink(e, links[i].hash)
       })
     }
   }
 
-  const setupSmoothLinks = (e, linkHash) => {
+  const setupSmoothLink = (e, hash) => {
     e.preventDefault()
     To({
-      location: document.getElementById(linkHash).offsetTop,
+      target: hash,
+      callback,
       markerCallback: () => {
         ignoreScrollEvents = false
       }
@@ -128,16 +143,16 @@ const Marker = (options = {}) => {
       if (distance > top) {
         if (topMostSection !== sections[i]) {
           topMostSection = sections[i]
-          setActive(topMostSection.id)
+          setActive('#' + topMostSection.id)
         }
         break
       }
     }
   }
 
-  const setActive = id => {
+  const setActive = hash => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
-    let currentlyActive = document.querySelector('.js-butr-link[href="#' + id + '"]')
+    let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
     if (currentlyActive !== previouslyActive) {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active')
       currentlyActive.classList.add('js-butr-active')
@@ -172,6 +187,6 @@ const Marker = (options = {}) => {
 }
 
 export default {
-  To,
-  Marker
+  to,
+  marker
 }

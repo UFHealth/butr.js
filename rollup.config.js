@@ -3,7 +3,7 @@ import babel from 'rollup-plugin-babel'
 
 export default {
   format: 'umd',
-  moduleName: 'butr',
+  moduleName: 'Butr',
   plugins: [
     resolve(),
     babel({
