@@ -5,7 +5,8 @@
 }(this, (function () { 'use strict';
 
 /**
- * To
+ * Butr.to
+ *
  * @param  {Object} options
  * @return
  */
@@ -76,7 +77,8 @@ var to = function to() {
 };
 
 /**
- * Marker
+ * Butr.marker
+ *
  * @param  {Object} options
  * @return
  */
@@ -102,7 +104,7 @@ var marker = function marker() {
 
   var checkRequiredElements = function checkRequiredElements() {
     if (!nav || !links || !sections) {
-      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.Marker');
+      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.marker');
       return false;
     } else return true;
   };
@@ -137,7 +139,7 @@ var marker = function marker() {
 
   var setupSmoothLink = function setupSmoothLink(e, hash) {
     e.preventDefault();
-    To({
+    to({
       target: hash,
       callback: callback,
       markerCallback: function markerCallback() {

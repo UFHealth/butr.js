@@ -1,5 +1,6 @@
 /**
- * To
+ * Butr.to
+ *
  * @param  {Object} options
  * @return
  */
@@ -71,7 +72,8 @@ const to = (options = {}) => {
 }
 
 /**
- * Marker
+ * Butr.marker
+ *
  * @param  {Object} options
  * @return
  */
@@ -97,7 +99,7 @@ const marker = (options = {}) => {
 
   const checkRequiredElements = () => {
     if (!nav || !links || !sections) {
-      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.Marker')
+      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.marker')
       return false
     } else return true
   }
@@ -128,7 +130,7 @@ const marker = (options = {}) => {
 
   const setupSmoothLink = (e, hash) => {
     e.preventDefault()
-    To({
+    to({
       target: hash,
       callback,
       markerCallback: () => {
