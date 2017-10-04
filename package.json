@@ -10,8 +10,6 @@
   "repository": "github:ufhealth/butr",
   "main": "index.js",
   "scripts": {
-    "build:marker": "rollup butr-marker.js -o butr-marker.min.js --config",
-    "build:to": "rollup butr-to.js -o butr-to.min.js --config",
     "build:all": "rollup src/butr.js -o dist/butr.js --config"
   },
   "devDependencies": {
