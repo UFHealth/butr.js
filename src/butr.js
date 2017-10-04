@@ -72,6 +72,26 @@ const to = (options = {}) => {
 }
 
 /**
+ * ezLinks
+ * @return {boolean}
+ *
+ * Allow automatic smooth scroll on any link with data-butr set
+ */
+const ezLinks = () => {
+  let links = document.body.querySelectorAll('a[data-butr]')
+  if (!links.length) return false
+
+  for (var i = links.length - 1; i >= 0; i--) {
+    links[i].addEventListener('click', e => {
+      e.preventDefault()
+      to({ target: e.target.getAttribute('href') })
+    })
+  }
+
+  return true
+}
+
+/**
  * Butr.marker
  *
  * @param  {Object} options
@@ -190,5 +210,6 @@ const marker = (options = {}) => {
 
 export default {
   to,
-  marker
+  marker,
+  ezLinks
 }

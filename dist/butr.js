@@ -77,6 +77,26 @@ var to = function to() {
 };
 
 /**
+ * ezLinks
+ * @return {boolean}
+ *
+ * Allow automatic smooth scroll on any link with data-butr set
+ */
+var ezLinks = function ezLinks() {
+  var links = document.body.querySelectorAll('a[data-butr]');
+  if (!links.length) return false;
+
+  for (var i = links.length - 1; i >= 0; i--) {
+    links[i].addEventListener('click', function (e) {
+      e.preventDefault();
+      to({ target: e.target.getAttribute('href') });
+    });
+  }
+
+  return true;
+};
+
+/**
  * Butr.marker
  *
  * @param  {Object} options
@@ -199,7 +219,8 @@ var marker = function marker() {
 
 var butr = {
   to: to,
-  marker: marker
+  marker: marker,
+  ezLinks: ezLinks
 };
 
 return butr;

@@ -28,6 +28,11 @@
         text-decoration: none;
       }
 
+      .link {
+        color: #2277ee;
+        text-decoration: none;
+      }
+
       .content {
         line-height: 1.5;
         margin-left: 160px;
@@ -80,6 +85,7 @@
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam ea minima totam fugiat aliquam ratione, assumenda doloremque quidem rerum deserunt et, fugit nesciunt voluptates? Consequuntur rerum corporis explicabo expedita totam.
           </p>
+          <a class="link" href="#six" data-butr>Go to section six</a>
         </section>
         <section id="two" class="js-butr-section">
           <h2>Two</h2>
@@ -123,6 +129,7 @@
     <script src="dist/butr.js"></script>
     <script>
       Butr.marker({ useTo: true });
+      Butr.ezLinks();
     </script>
   </body>
 </html>
