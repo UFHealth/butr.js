@@ -18,11 +18,11 @@ module.exports = {
     ]
   },
   output: {
-    filename: 'butr.js',
+    filename: 'butr.min.js',
     path: path.resolve(__dirname, 'dist'),
     library: 'butr'
   },
   plugins: [
-    // new UglifyJSPlugin()
+    new UglifyJSPlugin()
   ],
 }
