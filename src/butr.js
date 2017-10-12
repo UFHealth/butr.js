@@ -174,7 +174,7 @@ export const autoSidebar = options => {
 
   const init = () => {
     getRequiredElements()
-    if () {
+    if (checkRequiredElements()) {
       createTree()
       createNavList(tree, nav)
     }
