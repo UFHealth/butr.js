@@ -124,19 +124,31 @@ export const autoSidebar = options => {
       let currentLevel = setCurrentLevel(heading)
       let nextLevel = setNextLevel(index)
       let item = createItem(heading)
+
+      // Retrieve the list at the top of the stack and append item to it
       currentList = listStack[listStack.length - 1]
       currentList.push(item)
 
       if (nextLevel) {
         if (nextLevel > currentLevel) {
+          // If the next levels difference is more than one, correct it to 1.
+          // This will prevent out of order or malformed markup from breaking
+          // the tree being created.
           errorOffset += nextLevel - currentLevel - 1
           nextLevel -= errorOffset
+          // The next heading is lower than the current one; push the current item's
+          // `children` container onto the stack, which will cause the next item to be
+          // added to it.
           listStack.push(item.children)
         } else if (nextLevel < currentLevel) {
+          // Adjust for any existing level errors
           nextLevel += errorOffset
+          // Step back the correct number of levels in the stack so the next item will
+          // be added to the correct container.
           for (let i = 0; i < currentLevel - nextLevel; i++) {
             listStack.pop()
           }
+          // Reset error offset
           errorOffset = 0
         }
       }
