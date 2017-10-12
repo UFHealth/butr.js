@@ -1,6 +1,6 @@
 {
   "name": "butr",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "description": "Scrollz like butter",
   "contributors": [
     "Bill Columbia <hello@billcolumbia.com>",
@@ -10,13 +10,16 @@
   "repository": "github:ufhealth/butr",
   "main": "index.js",
   "scripts": {
-    "build:all": "rollup src/butr.js -o dist/butr.js --config"
+    "dev": "webpack-dev-server --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
   },
   "devDependencies": {
-    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
-    "rollup": "^0.45.1",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "html-webpack-plugin": "^2.30.1",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
   }
 }
