@@ -4,4 +4,4 @@
 
 New docs coming in separate repo...
 
-![logo.gif](logo.gif)
+![logo.png](logo.png)
