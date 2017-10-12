@@ -515,3 +515,46 @@ export const to = options => {
 
   init()
 }
+
+/**
+ * Stick sidebar to top when it hits the top of the viewport so that it stays
+ * visible
+ */
+export const stickySidebar = () => {
+  let pos = 0
+  let sidebar = document.querySelector('.js-butr-nav')
+
+  /**
+   * Set Y position of sidebar
+   */
+  const determineYPos = () => {
+    let rect = sidebar.getBoundingClientRect()
+    pos = rect.top
+  }
+
+  /**
+   * Set or remove classes to stick sidebar based on scroll position
+   */
+  const determineStickiness = () => {
+    let scrollEl = (document.scrollingElement || document.documentElement)
+    if (scrollEl.scrollTop > pos) {
+      sidebar.style.position = 'fixed'
+      sidebar.style.top = 0
+    } else {
+      sidebar.style.position = 'relative'
+      sidebar.style.top = 'auto'
+    }
+  }
+
+  /**
+   * Start up sticky sidebar
+   */
+  const init = () => {
+    determineYPos()
+    // Before scrolling decide if it needs to be sticky right away
+    determineStickiness()
+    window.addEventListener('scroll', determineStickiness)
+  }
+
+  init()
+}
