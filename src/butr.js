@@ -26,6 +26,8 @@ export const autoAnchors = () => {
 export const autoSidebar = options => {
   // Set defaults
   const defaults = {
+    olClass: '',
+    liClass: ''
   }
 
   // Determine settings based on defaults + user provided options
@@ -69,7 +71,7 @@ export const autoSidebar = options => {
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
     content = document.querySelector('.js-butr-container')
-    headings = content.querySelectorAll('.js-butr-heading')
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
   /**
@@ -165,6 +167,8 @@ export const autoSidebar = options => {
     let a = document.createElement('a')
     a.href = heading.hash
     a.innerText = heading.label
+    a.classList.add('js-butr-link')
+    if (settings.liClass) li.classList.add(settings.liClass)
     li.appendChild(a)
     return li
   }
@@ -176,6 +180,7 @@ export const autoSidebar = options => {
    */
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
+    if (settings.olClass) list.classList.add(settings.olClass)
     tree.forEach(item => {
       let li = createNavItem(item)
       if (item.children.length) createNavList(item.children, li)
@@ -208,7 +213,8 @@ export const marker = options => {
   const defaults = {
     container: false,
     duration: 400,
-    callback: false
+    callback: false,
+    markerClass: ''
   }
 
   // Determine settings based on defaults + user provided options
@@ -223,6 +229,7 @@ export const marker = options => {
   let container
   let links
   let headings
+  let nav
   let safeToUpdate = true
   let ignoreScrollEvents = false
 
@@ -256,13 +263,14 @@ export const marker = options => {
   const createMarker = () => {
     marker = document.createElement('div')
     marker.classList.add('js-butr-marker')
+    if (settings.markerClass) marker.classList.add(settings.markerClass)
     marker.style.height = links[0].offsetHeight + 'px'
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
     if (!prefersReducedMotion) {
       marker.style.transition =
         settings.duration +
-        'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+        'ms all cubic-bezier(0.455, 0.03, 0.515, 0.955)'
     }
     nav.appendChild(marker)
   }
@@ -291,6 +299,7 @@ export const marker = options => {
         e.preventDefault()
         ignoreScrollEvents = true
         setActive(links[i].hash)
+        marker.style.height = links[i].offsetHeight + 'px'
         butr.to({
           target: links[i].hash,
           callback: settings.callback,
