@@ -1,7 +1,7 @@
 /**
  * butr.autoAnchors()
  *
- * Animate all anchors with data-butr
+ * Animate all anchors that use the data-butr attribute.
  */
 export const autoAnchors = () => {
   let links = document.body.querySelectorAll('a[data-butr]')
@@ -19,9 +19,9 @@ export const autoAnchors = () => {
 /**
  * butr.autoSidebar()
  *
- * Automatically generate sidebar nav links based on the headings in the content
+ * Automatically generate sidebar nav links based on the headings in the content.
  *
- * @param  {object} options
+ * @param {object} options Configuration options.
  */
 export const autoSidebar = options => {
   // Set defaults
@@ -42,9 +42,10 @@ export const autoSidebar = options => {
   let errorOffset = 0
 
   /**
-   * Generate ID based on heading text content
+   * Generate ID based on heading text content.
+   *
    * @param  {string} text
-   * @return {string} id (slugified)
+   * @return {string} Slugified text for use as an ID attribute.
    */
   const generateId = text => {
     return text.toLowerCase()
@@ -56,9 +57,10 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create a hash from a string
-   * @param  {object} heading el
-   * @return {string} hash
+   * Create a hash from a string.
+   *
+   * @param  {Node} heading Heading node.
+   * @return {string} The #heading-hash.
    */
   const createHash = heading => {
     if (!heading.id) heading.id = generateId(heading.innerText)
@@ -66,7 +68,7 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Get required elements
+   * Get required element nodes.
    */
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
@@ -75,8 +77,9 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Make sure required elements are in place
-   * @return {boolean} required elements exist
+   * Make sure required elements are in place.
+   *
+   * @return {boolean} True only if all required elements exist.
    */
   const checkRequiredElements = () => {
     if (!nav || !content || !headings) {
@@ -86,18 +89,20 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Set current level in tree
-   * @param  {object} heading el
-   * @return {int} current level
+   * Set current level in tree.
+   *
+   * @param  {Node} heading Heading node.
+   * @return {Number} Current heading level.
    */
   const setCurrentLevel = heading => {
     return parseInt(heading.tagName.substr(1)) - errorOffset
   }
 
   /**
-   * Set next level in tree
-   * @param  {int} index of current heading
-   * @return {int} level of next heading
+   * Set next level in tree.
+   *
+   * @param  {Number} index Index of current heading.
+   * @return {Number} Level of next heading.
    */
   const setNextLevel = index => {
     return headings[index + 1]
@@ -106,9 +111,10 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create list item from heading
-   * @param  {object} heading el
-   * @return {object} heading data expressed as simple object
+   * Create list item from heading.
+   *
+   * @param  {Node} heading Heading node.
+   * @return {object} Heading context data as a simple object.
    */
   const createItem = heading => {
     return {
@@ -119,7 +125,7 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create tree from headings
+   * Create tree from headings.
    */
   const createTree = () => {
     headings.forEach((heading, index) => {
@@ -158,9 +164,10 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create nav list item (li) from heading
-   * @param  {object} heading el
-   * @return {object} li element with appended anchor
+   * Create nav list item (li) from heading.
+   *
+   * @param  {Node} heading Heading node.
+   * @return {Node} <li> element with appended anchor.
    */
   const createNavItem = heading => {
     let li = document.createElement('li')
@@ -174,9 +181,10 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create nav list (ol) with tree data and append to parent element
-   * @param  {array} tree    hierarchical tree of headings
-   * @param  {object} parent el to append to
+   * Create nav list (ol) with tree data and append to parent element.
+   *
+   * @param {array} tree   Hierarchical tree of headings.
+   * @param {Node}  parent Container node to append to.
    */
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
@@ -201,11 +209,11 @@ export const autoSidebar = options => {
 }
 
 /**
- * butr.marker() method
+ * butr.marker()
  *
- * Animate a marker to indicate active state in nav
+ * Create and animate a marker to indicate active state in a nav.
  *
- * @param  {object} settings
+ * @param {object} settings
  */
 export const marker = options => {
 
@@ -235,7 +243,7 @@ export const marker = options => {
 
   /**
    * Set container with el query or with default body el
-   * Get other required elements
+   * Get other required elements.
    */
   const getRequiredElements = () => {
     container = settings.container
@@ -247,8 +255,9 @@ export const marker = options => {
   }
 
   /**
-   * Make sure required elements are in place
-   * @return {boolean} required elements exist
+   * Make sure required elements are in place.
+   *
+   * @return {boolean} Tru only if required elements exist.
    */
   const checkRequiredElements = () => {
     if (!nav || !links) {
@@ -258,7 +267,7 @@ export const marker = options => {
   }
 
   /**
-   * Create a marker element with animated css props
+   * Create a marker element with animated css props.
    */
   const createMarker = () => {
     marker = document.createElement('div')
@@ -276,8 +285,9 @@ export const marker = options => {
   }
 
   /**
-   * Set marker position to animate to
-   * @param  {object} activeLink currently active link
+   * Set marker position to animate to.
+   *
+   * @param {Node} activeLink currently active link
    */
   const setMarkerPosition = activeLink => {
     marker.style.transform = 'translateY(' + activeLink.offsetTop + 'px)'
@@ -312,7 +322,7 @@ export const marker = options => {
   }
 
   /**
-   * Loop over headings and reassign active class to links as needed
+   * Loop over headings and reassign active class to links as needed.
    */
   const checkActive = () => {
     let heading
@@ -326,8 +336,9 @@ export const marker = options => {
   }
 
   /**
-   * Toggle active class between nav links
-   * @param  {string} hash of section link to make active
+   * Toggle active class between nav links.
+   *
+   * @param {string} hash Section link to make active.
    */
   const setActive = hash => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
@@ -340,7 +351,7 @@ export const marker = options => {
   }
 
   /**
-   * Set top scroll position and use it to check which link should be active
+   * Set top scroll position and use it to check which link should be active.
    */
   const updateNav = () => {
     top = container.scrollTop
@@ -348,7 +359,7 @@ export const marker = options => {
   }
 
   /**
-   * Animate the updates
+   * Animate the updates.
    */
   const animationLoop = () => {
     if (ignoreScrollEvents) return
@@ -363,9 +374,7 @@ export const marker = options => {
 
   const init = () => {
     getRequiredElements()
-    /**
-     * If all elements are present, initialize marker
-     */
+    // If all elements are present, initialize marker
     if (checkRequiredElements()) {
       createMarker()
       setupLinkEvents()
@@ -378,12 +387,12 @@ export const marker = options => {
 }
 
 /**
- * butr.to() method
+ * butr.to()
  *
  * A stand alone, globally accessible method for scrolling to a target
- * (location or hash)
+ * (location or hash).
  *
- * @param  {object} options
+ * @param {object} options
  */
 export const to = options => {
 
@@ -412,18 +421,19 @@ export const to = options => {
   let el
 
   /**
-   * Set Element with query or default body element
-   * scrollingElement is newish, so fallback to documentElement if needed
-   * @return {object} element
+   * Set Element with query or default scrolling element.
+   * Note: scrollingElement is newish, so falls back to documentElement if needed.
+   *
+   * @return {Node}
    */
-  const setElement = () => {
+  const getElement = () => {
     return options.el
       ? document.querySelector(options.el)
       : document.scrollingElement || document.documentElement
   }
 
   /**
-   * @return {int} current scroll position inside set (scrolling) element
+   * @return {Number} Current scroll position inside set (scrolling) element.
    */
   const getCurrentPosition = () => {
     if (settings.direction === 'x') return el.scrollLeft
@@ -431,8 +441,9 @@ export const to = options => {
   }
 
   /**
-   * Determine target position, hash position, or just manually set int
-   * @return {int} target position
+   * Determine target position, hash position, or just manually set int.
+   *
+   * @return {Number} Target position.
    */
   const getTargetPosition = () => {
     if (settings.target[0] === '#') {
@@ -445,15 +456,17 @@ export const to = options => {
   }
 
   /**
-   * Easing function
-   * @param  {int} t current time
-   * @param  {int} b start value
-   * @param  {int} c change in value
-   * @param  {int} d duration
-   * @return {int} amount to scroll
+   * Easing function.
+   *
+   * @link  http://gizma.com/easing/#quad3
+   *
+   * @param  {Number} t Current time.
+   * @param  {Number} b Start value.
+   * @param  {Number} c Change in value.
+   * @param  {Number} d Duration.
+   * @return {Number} Amount to scroll.
    */
   const easing = (t, b, c, d) => {
-    // http://gizma.com/easing/#quad3
     t /= d/2
     if (t < 1) return c/2*t*t + b
     t--
@@ -461,8 +474,9 @@ export const to = options => {
   }
 
   /**
-   * Update scroll position of element
-   * @param {int} distance amount to scroll
+   * Update scroll position of element.
+   *
+   * @param {Number} distance Amount to scroll.
    */
   const scrollTheEl = distance => {
     if (settings.direction === 'x') el.scrollLeft = distance
@@ -470,7 +484,7 @@ export const to = options => {
   }
 
   /**
-   * Animate until time is up using steps and counter for animation time
+   * Animate until time is up using steps and counter for animation time.
    */
   const animationLoop = () => {
     counter += step
@@ -483,11 +497,10 @@ export const to = options => {
   }
 
   /**
-   * Set up all required data
-   * Then start the animation
+   * Set up all required data and start the animation.
    */
   const init = () => {
-    el = setElement()
+    el = getElement()
     if (!prefersReducedMotion) {
       start = getCurrentPosition()
       distance = getTargetPosition() - start
