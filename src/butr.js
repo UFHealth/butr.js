@@ -59,10 +59,8 @@ export const autoSidebar = options => {
    * @return {string} hash
    */
   const createHash = heading => {
-    return '#'
-      + (heading.id.length
-        ? heading.id
-        : generateId(heading.innerText))
+    if (!heading.id) heading.id = generateId(heading.innerText)
+    return '#' + heading.id
   }
 
   /**
