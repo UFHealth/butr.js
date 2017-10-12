@@ -39,6 +39,11 @@ export const autoSidebar = options => {
   let listStack = [tree]
   let errorOffset = 0
 
+  /**
+   * Generate ID based on heading text content
+   * @param  {string} text
+   * @return {string} id (slugified)
+   */
   const generateId = text => {
     return text.toLowerCase()
       .replace(/\s+/g, '-')
@@ -48,6 +53,11 @@ export const autoSidebar = options => {
       .replace(/-+$/, '')
   }
 
+  /**
+   * Create a hash from a string
+   * @param  {object} heading el
+   * @return {string} hash
+   */
   const createHash = heading => {
     return '#'
       + (heading.id.length
@@ -55,23 +65,52 @@ export const autoSidebar = options => {
         : generateId(heading.innerText))
   }
 
+  /**
+   * Get required elements
+   */
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
     content = document.querySelector('.js-butr-container')
     headings = content.querySelectorAll('.js-butr-heading')
   }
 
+  /**
+   * Make sure required elements are in place
+   * @return {boolean} required elements exist
+   */
+  const checkRequiredElements = () => {
+    if (!nav || !content || !headings) {
+      console.error('Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker')
+      return false
+    } else return true
+  }
+
+  /**
+   * Set current level in tree
+   * @param  {object} heading el
+   * @return {int} current level
+   */
   const setCurrentLevel = heading => {
     return parseInt(heading.tagName.substr(1)) - errorOffset
   }
 
+  /**
+   * Set next level in tree
+   * @param  {int} index of current heading
+   * @return {int} level of next heading
+   */
   const setNextLevel = index => {
     return headings[index + 1]
       ? parseInt(headings[index + 1].tagName.substr(1)) - errorOffset
       : 0
   }
 
-  const setItem = heading => {
+  /**
+   * Create list item from heading
+   * @param  {object} heading el
+   * @return {object} heading data expressed as simple object
+   */
+  const createItem = heading => {
     return {
       label: heading.innerText,
       hash: createHash(heading),
@@ -79,11 +118,14 @@ export const autoSidebar = options => {
     }
   }
 
+  /**
+   * Create tree from headings
+   */
   const createTree = () => {
     headings.forEach((heading, index) => {
       let currentLevel = setCurrentLevel(heading)
       let nextLevel = setNextLevel(index)
-      let item = setItem(heading)
+      let item = createItem(heading)
       currentList = listStack[listStack.length - 1]
       currentList.push(item)
 
@@ -103,6 +145,11 @@ export const autoSidebar = options => {
     })
   }
 
+  /**
+   * Create nav list item (li) from heading
+   * @param  {object} heading el
+   * @return {object} li element with appended anchor
+   */
   const createNavItem = heading => {
     let li = document.createElement('li')
     let a = document.createElement('a')
@@ -112,6 +159,11 @@ export const autoSidebar = options => {
     return li
   }
 
+  /**
+   * Create nav list (ol) with tree data and append to parent element
+   * @param  {array} tree    hierarchical tree of headings
+   * @param  {object} parent el to append to
+   */
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
     tree.forEach(item => {
@@ -124,8 +176,10 @@ export const autoSidebar = options => {
 
   const init = () => {
     getRequiredElements()
-    createTree()
-    createNavList(tree, nav)
+    if () {
+      createTree()
+      createNavList(tree, nav)
+    }
   }
 
   init()
@@ -181,7 +235,7 @@ export const marker = options => {
    */
   const checkRequiredElements = () => {
     if (!nav || !links) {
-      console.error('Error: Missing required classes on nav, links, or sections. Aborted setup of Butr.marker')
+      console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker')
       return false
     } else return true
   }
