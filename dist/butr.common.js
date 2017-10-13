@@ -622,5 +622,13 @@ var stickySidebar = exports.stickySidebar = function stickySidebar() {
   init();
 };
 
+exports.default = {
+  autoAnchors: autoAnchors,
+  autoSidebar: autoSidebar,
+  marker: marker,
+  stickySidebar: stickySidebar,
+  to: to
+};
+
 /***/ })
 /******/ ]);

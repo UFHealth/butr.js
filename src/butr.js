@@ -558,3 +558,11 @@ export const stickySidebar = () => {
 
   init()
 }
+
+export default {
+  autoAnchors,
+  autoSidebar,
+  marker,
+  stickySidebar,
+  to
+}
