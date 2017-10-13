@@ -17,7 +17,7 @@ const targets = {
   'commonjs': {
     output: {
       filename: 'butr.common.js',
-      libraryTarget: 'commonjs'
+      libraryTarget: 'commonjs2'
     }
   }
 }
