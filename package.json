@@ -10,6 +10,10 @@
   "repository": "github:ufhealth/butr",
   "main": "dist/butr.common.js",
   "module": "src/butr.js",
+  "files": [
+    "src",
+    "dist/*.js"
+  ],
   "scripts": {
     "dev": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
