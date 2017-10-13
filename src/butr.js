@@ -222,7 +222,8 @@ export const marker = options => {
     container: false,
     duration: 400,
     callback: false,
-    markerClass: ''
+    markerClass: '',
+    activeClass: '',
   }
 
   // Determine settings based on defaults + user provided options
@@ -345,7 +346,9 @@ export const marker = options => {
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
     if (currentlyActive !== previouslyActive) {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active')
+      if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
       currentlyActive.classList.add('js-butr-active')
+      if (settings.activeClass) currentlyActive.classList.add(settings.activeClass)
     }
     setMarkerPosition(currentlyActive)
   }
@@ -517,43 +520,91 @@ export const to = options => {
 }
 
 /**
- * Stick sidebar to top when it hits the top of the viewport so that it stays
+ * Stick Nav to top when it hits the top of the viewport so that it stays
  * visible
  */
-export const stickySidebar = () => {
-  let pos = 0
-  let sidebar = document.querySelector('.js-butr-nav')
+export const stickyNav = options => {
 
-  /**
-   * Set Y position of sidebar
-   */
-  const determineYPos = () => {
-    let rect = sidebar.getBoundingClientRect()
-    pos = rect.top
+  // Set defaults
+  const defaults = {
+    distanceTop: 0
   }
 
+  // Determine settings based on defaults + user provided options
+  let settings = Object.assign({}, defaults, options)
+
+  let pos = 0
+  let scrollEl = (document.scrollingElement || document.documentElement)
+  let nav = document.querySelector('.js-butr-nav')
+
   /**
-   * Set or remove classes to stick sidebar based on scroll position
+   * Basic debounce
+   * More info: https://davidwalsh.name/function-debounce
+   * @param  {function} callback
+   * @param  {int}      delay
+   * @return {function} debounced function
    */
-  const determineStickiness = () => {
-    let scrollEl = (document.scrollingElement || document.documentElement)
-    if (scrollEl.scrollTop > pos) {
-      sidebar.style.position = 'fixed'
-      sidebar.style.top = 0
-    } else {
-      sidebar.style.position = 'relative'
-      sidebar.style.top = 'auto'
+  const debounce = (callback, delay) => {
+    let timeout
+    return function () {
+      let args = arguments
+      clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        callback.apply(this, args)
+      }, delay)
     }
   }
 
   /**
-   * Start up sticky sidebar
+   * Set Y position of nav
+   */
+  const determineYPos = () => {
+    pos = nav.offsetTop - extractInt(settings.distanceTop)
+  }
+
+  /**
+   * Extract int from string with unit (px, em, etc)
+   * @param  {string} txt
+   * @return {int}    number left over from string
+   */
+  const extractInt = txt => {
+    return parseInt(txt.replace(/[^0-9\.]+/g, ''))
+  }
+
+  /**
+   * Calculate width of nav based on parent container
+   * Function is debounced to prevent excessive calls during scroll
+   */
+  const setWidth = debounce(() => {
+    let parentStyle = window.getComputedStyle(nav.parentNode, null)
+    let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
+    let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
+    let width = extractInt(parentStyle.getPropertyValue('width'))
+    nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
+  }, 250)
+
+  /**
+   * Set or remove classes to stick nav based on scroll position
+   */
+  const determineStickiness = () => {
+    if (scrollEl.scrollTop >= pos) {
+      nav.style.position = 'fixed'
+      nav.style.top = settings.distanceTop
+    } else {
+      nav.style.position = 'relative'
+      nav.style.top = 'auto'
+    }
+  }
+
+  /**
+   * Start up sticky nav
    */
   const init = () => {
     determineYPos()
-    // Before scrolling decide if it needs to be sticky right away
     determineStickiness()
+    setWidth()
     window.addEventListener('scroll', determineStickiness)
+    window.addEventListener('resize', setWidth)
   }
 
   init()
