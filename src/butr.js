@@ -1,3 +1,65 @@
+import objAssign from 'object-assign'
+
+export const animate = options => {
+  const defaults = {
+    duration: 800,
+    loop: null,
+    done: null,
+    easing: 'easeInOutQuad'
+  }
+
+  // Determine settings based on defaults + user provided options
+  let settings = objAssign({}, defaults, options)
+
+  let start
+  let end
+  let now
+  let timePassed = 0
+
+  const startAnimation = () => {
+    start = performance.now()
+    end = start + settings.duration
+    frame()
+  }
+
+  const frame = () => {
+    now = performance.now()
+    settings.loop(calcIncrement)
+    if (now < end) requestAnimationFrame(frame)
+    else {
+      if (typeof settings.done === 'function') settings.done()
+    }
+  }
+
+  const calcIncrement = (startValue , endValue) => {
+    let delta = endValue - startValue
+    let eased = delta * timingFunctions[settings.easing](elapsed())
+    return startValue + eased
+  }
+
+  const elapsed = () => {
+    return Math.min((now - start) / settings.duration, 1)
+  }
+
+  const timingFunctions = {
+    linear (t) { return t },
+    easeInQuad (t) { return t*t },
+    easeOutQuad (t) { return t*(2-t) },
+    easeInOutQuad (t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
+    easeInCubic (t) { return t*t*t },
+    easeOutCubic (t) { return (--t)*t*t+1 },
+    easeInOutCubic (t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
+    easeInQuart (t) { return t*t*t*t },
+    easeOutQuart (t) { return 1-(--t)*t*t*t },
+    easeInOutQuart (t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
+    easeInQuint (t) { return t*t*t*t*t },
+    easeOutQuint (t) { return 1+(--t)*t*t*t*t },
+    easeInOutQuint (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
+  }
+
+  startAnimation()
+}
+
 /**
  * butr.autoAnchors()
  *
@@ -8,12 +70,12 @@ export const autoAnchors = () => {
   // Exit before for loop if there are no anchors on the page
   if (!links.length) return false
   // When clicking a link, use butr to scroll to the element with that id
-  links.forEach(link => {
-    link.addEventListener('click', e => {
+  for (let i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', e => {
       e.preventDefault()
       butr.to({ target: e.target.getAttribute('href') })
     })
-  })
+  }
 }
 
 /**
@@ -31,7 +93,7 @@ export const autoSidebar = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   let content
   let headings
@@ -128,9 +190,10 @@ export const autoSidebar = options => {
    * Create tree from headings.
    */
   const createTree = () => {
-    headings.forEach((heading, index) => {
+    for (let i = 0; i < headings.length; i++) {
+      let heading = headings[i]
       let currentLevel = setCurrentLevel(heading)
-      let nextLevel = setNextLevel(index)
+      let nextLevel = setNextLevel(i)
       let item = createItem(heading)
 
       // Retrieve the list at the top of the stack and append item to it
@@ -160,7 +223,7 @@ export const autoSidebar = options => {
           errorOffset = 0
         }
       }
-    })
+    }
   }
 
   /**
@@ -189,11 +252,12 @@ export const autoSidebar = options => {
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
     if (settings.olClass) list.classList.add(settings.olClass)
-    tree.forEach(item => {
+    for (let i = 0; i < tree.length; i++) {
+      let item = tree[i]
       let li = createNavItem(item)
       if (item.children.length) createNavList(item.children, li)
       list.appendChild(li)
-    })
+    }
     parent.appendChild(list)
   }
 
@@ -227,7 +291,7 @@ export const marker = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -280,7 +344,7 @@ export const marker = options => {
     if (!prefersReducedMotion) {
       marker.style.transition =
         settings.duration +
-        'ms all cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+        'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)'
     }
     nav.appendChild(marker)
   }
@@ -310,8 +374,9 @@ export const marker = options => {
         e.preventDefault()
         ignoreScrollEvents = true
         setActive(links[i].hash)
-        marker.style.height = links[i].offsetHeight + 'px'
+        // marker.style.height = links[i].offsetHeight + 'px'
         butr.to({
+          duration: settings.duration,
           target: links[i].hash,
           callback: settings.callback,
           markerCallback: () => {
@@ -411,16 +476,14 @@ export const to = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
 
   // Initialize required data
   let start
-  let distance
-  let counter
-  let step
+  let end
   let el
 
   /**
@@ -459,24 +522,6 @@ export const to = options => {
   }
 
   /**
-   * Easing function.
-   *
-   * @link  http://gizma.com/easing/#quad3
-   *
-   * @param  {Number} t Current time.
-   * @param  {Number} b Start value.
-   * @param  {Number} c Change in value.
-   * @param  {Number} d Duration.
-   * @return {Number} Amount to scroll.
-   */
-  const easing = (t, b, c, d) => {
-    t /= d/2
-    if (t < 1) return c/2*t*t + b
-    t--
-    return -c/2 * (t*(t-2) - 1) + b
-  }
-
-  /**
    * Update scroll position of element.
    *
    * @param {Number} distance Amount to scroll.
@@ -487,32 +532,26 @@ export const to = options => {
   }
 
   /**
-   * Animate until time is up using steps and counter for animation time.
-   */
-  const animationLoop = () => {
-    counter += step
-    scrollTheEl(easing(counter, start, distance, settings.duration))
-    if (counter < settings.duration) requestAnimationFrame(animationLoop)
-    else {
-      if (typeof settings.callback === 'function') settings.callback()
-      if (typeof settings.markerCallback === 'function') settings.markerCallback()
-    }
-  }
-
-  /**
    * Set up all required data and start the animation.
    */
   const init = () => {
     el = getElement()
     if (!prefersReducedMotion) {
       start = getCurrentPosition()
-      distance = getTargetPosition() - start
-      counter = 0
-      step = 33 // 30~ FPS
+      end = getTargetPosition()
+      animate({
+        loop (calcIncrement) {
+          let distance = calcIncrement(start, end)
+          scrollTheEl(distance)
+        },
+        done () {
+          if (typeof settings.callback === 'function') settings.callback()
+          if (typeof settings.markerCallback === 'function') settings.markerCallback()
+        }
+      })
       if (settings.keepHash && settings.target[0] === '#') {
         history.pushState({}, '', settings.target)
       }
-      animationLoop()
     } else scrollTheEl(getTargetPosition())
   }
 
@@ -531,7 +570,7 @@ export const stickyNav = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   let pos = 0
   let scrollEl = (document.scrollingElement || document.documentElement)
