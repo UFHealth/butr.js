@@ -1,3 +1,119 @@
+import objAssign from 'object-assign'
+
+/**
+ * Basic debounce
+ * More info: https://davidwalsh.name/function-debounce
+ *
+ * @param  {function} callback
+ * @param  {Number}   delay
+ * @return {function} debounced function
+ */
+const debounce = (callback, delay) => {
+  let timeout
+  return function () {
+    let args = arguments
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      callback.apply(this, args)
+    }, delay)
+  }
+}
+
+/**
+ * Animation function - accepts duration, callback for animation loop (each
+ * frame), callback when animation is complete, and option for easing function.
+ *
+ * @param {object} options
+ */
+const animate = options => {
+  const defaults = {
+    duration: 800,
+    loop: null,
+    done: null,
+    easing: 'easeInOutQuad'
+  }
+
+  // Determine settings based on defaults + user provided options
+  let settings = objAssign({}, defaults, options)
+
+  let start
+  let end
+  let now
+  let timePassed = 0
+
+  /**
+   * Start animation - get current time, set end time (based on current) and
+   * create first frame
+   */
+  const startAnimation = () => {
+    start = performance.now()
+    end = start + settings.duration
+    frame()
+  }
+
+  /**
+   * Current Frame - any logic to update the frame happens here
+   * Set the now time, apply loop callback, and if now is not the end, run frame
+   * again, otherwise use done callback, if provided
+   */
+  const frame = () => {
+    now = performance.now()
+    settings.loop(calcIncrement)
+    if (now < end) requestAnimationFrame(frame)
+    else {
+      if (typeof settings.done === 'function') settings.done()
+    }
+  }
+
+  /**
+   * Calculate increment based on easing
+   * This method is passed to the loop callback so that it can be called
+   * to get eased increments for frame updates.
+   *
+   * @param  {Number} startValue
+   * @param  {Number} endValue
+   * @return {Number} increment
+   */
+  const calcIncrement = (startValue , endValue) => {
+    let delta = endValue - startValue
+    let eased = delta * timingFunctions[settings.easing](elapsed())
+    return startValue + eased
+  }
+
+  /**
+   * Calculate Elapsed time
+   *
+   * @return {Number} elapsed time (in ms)
+   */
+  const elapsed = () => {
+    return Math.min((now - start) / settings.duration, 1)
+  }
+
+  /**
+   * Timing (Easing) functions
+   * https://gist.github.com/gre/1650294
+   *
+   * @type {Object}
+   */
+  const timingFunctions = {
+    linear (t) { return t },
+    easeInQuad (t) { return t*t },
+    easeOutQuad (t) { return t*(2-t) },
+    easeInOutQuad (t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
+    easeInCubic (t) { return t*t*t },
+    easeOutCubic (t) { return (--t)*t*t+1 },
+    easeInOutCubic (t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
+    easeInQuart (t) { return t*t*t*t },
+    easeOutQuart (t) { return 1-(--t)*t*t*t },
+    easeInOutQuart (t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
+    easeInQuint (t) { return t*t*t*t*t },
+    easeOutQuint (t) { return 1+(--t)*t*t*t*t },
+    easeInOutQuint (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
+  }
+
+  startAnimation()
+}
+
 /**
  * butr.autoAnchors()
  *
@@ -8,12 +124,12 @@ export const autoAnchors = () => {
   // Exit before for loop if there are no anchors on the page
   if (!links.length) return false
   // When clicking a link, use butr to scroll to the element with that id
-  links.forEach(link => {
-    link.addEventListener('click', e => {
+  for (let i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', e => {
       e.preventDefault()
       butr.to({ target: e.target.getAttribute('href') })
     })
-  })
+  }
 }
 
 /**
@@ -31,7 +147,7 @@ export const autoSidebar = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   let content
   let headings
@@ -128,9 +244,10 @@ export const autoSidebar = options => {
    * Create tree from headings.
    */
   const createTree = () => {
-    headings.forEach((heading, index) => {
+    for (let i = 0; i < headings.length; i++) {
+      let heading = headings[i]
       let currentLevel = setCurrentLevel(heading)
-      let nextLevel = setNextLevel(index)
+      let nextLevel = setNextLevel(i)
       let item = createItem(heading)
 
       // Retrieve the list at the top of the stack and append item to it
@@ -160,7 +277,7 @@ export const autoSidebar = options => {
           errorOffset = 0
         }
       }
-    })
+    }
   }
 
   /**
@@ -189,11 +306,12 @@ export const autoSidebar = options => {
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
     if (settings.olClass) list.classList.add(settings.olClass)
-    tree.forEach(item => {
+    for (let i = 0; i < tree.length; i++) {
+      let item = tree[i]
       let li = createNavItem(item)
       if (item.children.length) createNavList(item.children, li)
       list.appendChild(li)
-    })
+    }
     parent.appendChild(list)
   }
 
@@ -219,7 +337,7 @@ export const marker = options => {
 
   // Set defaults
   const defaults = {
-    container: false,
+    scrollingElement: false,
     duration: 400,
     callback: false,
     markerClass: '',
@@ -227,7 +345,7 @@ export const marker = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -235,7 +353,7 @@ export const marker = options => {
   // Initialize required data
   let top
   let marker
-  let container
+  let scrollingElement
   let links
   let headings
   let nav
@@ -243,16 +361,16 @@ export const marker = options => {
   let ignoreScrollEvents = false
 
   /**
-   * Set container with el query or with default body el
+   * Set scrollingElement with el query or with default body el
    * Get other required elements.
    */
   const getRequiredElements = () => {
-    container = settings.container
-      ? document.querySelector(settings.container)
+    scrollingElement = settings.scrollingElement
+      ? document.querySelector(settings.scrollingElement)
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    headings = container.querySelectorAll('h2, h3, h4, h5, h6')
+    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
   /**
@@ -280,7 +398,7 @@ export const marker = options => {
     if (!prefersReducedMotion) {
       marker.style.transition =
         settings.duration +
-        'ms all cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+        'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)'
     }
     nav.appendChild(marker)
   }
@@ -291,7 +409,7 @@ export const marker = options => {
    * @param {Node} activeLink currently active link
    */
   const setMarkerPosition = activeLink => {
-    marker.style.transform = 'translateY(' + activeLink.offsetTop + 'px)'
+    marker.style.transform = `translateY(${activeLink.offsetTop}px)`
   }
 
   /**
@@ -309,9 +427,9 @@ export const marker = options => {
       links[i].addEventListener('click', e => {
         e.preventDefault()
         ignoreScrollEvents = true
-        setActive(links[i].hash)
-        marker.style.height = links[i].offsetHeight + 'px'
+        setActive(links[i].hash, 'setupLinkEvents')
         butr.to({
+          duration: settings.duration,
           target: links[i].hash,
           callback: settings.callback,
           markerCallback: () => {
@@ -333,7 +451,7 @@ export const marker = options => {
         break
       } else heading = headings[i]
     }
-    if (heading) setActive('#' + heading.id)
+    if (heading) setActive('#' + heading.id, 'checkActive')
   }
 
   /**
@@ -341,7 +459,7 @@ export const marker = options => {
    *
    * @param {string} hash Section link to make active.
    */
-  const setActive = hash => {
+  const setActive = (hash, where) => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
     if (currentlyActive !== previouslyActive) {
@@ -357,23 +475,20 @@ export const marker = options => {
    * Set top scroll position and use it to check which link should be active.
    */
   const updateNav = () => {
-    top = container.scrollTop
+    top = scrollingElement.scrollTop
     checkActive()
   }
 
   /**
-   * Animate the updates.
+   * Call for scrolling event
+   *
+   * Use debounce to only fire once every 50ms and not every pixel
+   * https://davidwalsh.name/javascript-debounce-function
    */
-  const animationLoop = () => {
+  const contentScrolled = debounce(() => {
     if (ignoreScrollEvents) return
-    if (safeToUpdate) {
-      requestAnimationFrame(() => {
-        updateNav()
-        safeToUpdate = true
-      })
-    }
-    safeToUpdate = false
-  }
+    updateNav()
+  }, 50)
 
   const init = () => {
     getRequiredElements()
@@ -382,7 +497,7 @@ export const marker = options => {
       createMarker()
       setupLinkEvents()
       updateNav()
-      window.addEventListener('scroll', animationLoop)
+      window.addEventListener('scroll', contentScrolled)
     }
   }
 
@@ -401,27 +516,24 @@ export const to = options => {
 
   // Set defaults
   const defaults = {
-    el: false,
+    scrollingElement: false,
     target: 0,
     direction: 'y',
-    duration: 800,
     keepHash: true,
     callback: null,
     markerCallback: null
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
 
   // Initialize required data
   let start
-  let distance
-  let counter
-  let step
-  let el
+  let end
+  let scrollingElement
 
   /**
    * Set Element with query or default scrolling element.
@@ -429,9 +541,9 @@ export const to = options => {
    *
    * @return {Node}
    */
-  const getElement = () => {
-    return options.el
-      ? document.querySelector(options.el)
+  const getScrollingElement = () => {
+    return options.scrollingElement
+      ? document.querySelector(options.scrollingElement)
       : document.scrollingElement || document.documentElement
   }
 
@@ -439,8 +551,8 @@ export const to = options => {
    * @return {Number} Current scroll position inside set (scrolling) element.
    */
   const getCurrentPosition = () => {
-    if (settings.direction === 'x') return el.scrollLeft
-    if (settings.direction === 'y') return el.scrollTop
+    if (settings.direction === 'x') return scrollingElement.scrollLeft
+    if (settings.direction === 'y') return scrollingElement.scrollTop
   }
 
   /**
@@ -459,61 +571,71 @@ export const to = options => {
   }
 
   /**
-   * Easing function.
-   *
-   * @link  http://gizma.com/easing/#quad3
-   *
-   * @param  {Number} t Current time.
-   * @param  {Number} b Start value.
-   * @param  {Number} c Change in value.
-   * @param  {Number} d Duration.
-   * @return {Number} Amount to scroll.
-   */
-  const easing = (t, b, c, d) => {
-    t /= d/2
-    if (t < 1) return c/2*t*t + b
-    t--
-    return -c/2 * (t*(t-2) - 1) + b
-  }
-
-  /**
    * Update scroll position of element.
    *
    * @param {Number} distance Amount to scroll.
    */
   const scrollTheEl = distance => {
-    if (settings.direction === 'x') el.scrollLeft = distance
-    if (settings.direction === 'y') el.scrollTop = distance
+    if (settings.direction === 'x') scrollingElement.scrollLeft = distance
+    if (settings.direction === 'y') scrollingElement.scrollTop = distance
   }
 
   /**
-   * Animate until time is up using steps and counter for animation time.
+   * Callback passed to done option in animate function - runs markerCallback
+   * and user specified callback once the animation is done (if they're defined)
    */
-  const animationLoop = () => {
-    counter += step
-    scrollTheEl(easing(counter, start, distance, settings.duration))
-    if (counter < settings.duration) requestAnimationFrame(animationLoop)
-    else {
-      if (typeof settings.callback === 'function') settings.callback()
-      if (typeof settings.markerCallback === 'function') settings.markerCallback()
+  const afterScroll = () => {
+    if (typeof settings.callback === 'function') settings.callback()
+    if (typeof settings.markerCallback === 'function') settings.markerCallback()
+  }
+
+  /**
+   * Calculate duration based on distance, modified sqrt curve
+   * Allows more time for longer distances but trends toward a maximum time
+   * ensuring no scroll animations are excessively long even on long pages
+   * https://www.wolframalpha.com/input/?i=plot+24+*+sqrt(x)
+   *
+   * @param  {int} distance
+   * @return {int} duration (in ms)
+   */
+  const calcDuration = distance => {
+    let coefficient = 24
+    return coefficient * Math.sqrt(Math.abs(distance))
+  }
+
+  /**
+   * Animate Scroll
+   */
+  const useAnimations = () => {
+    start = getCurrentPosition()
+    end = getTargetPosition()
+    animate({
+      duration: calcDuration(end - start),
+      loop (calcIncrement) {
+        let distance = calcIncrement(start, end)
+        scrollTheEl(distance)
+      },
+      done: afterScroll
+    })
+  }
+
+  /**
+   * Set hash in URL if needed
+   */
+  const setHash = () => {
+    if (settings.keepHash && settings.target[0] === '#') {
+      history.pushState({}, '', settings.target)
     }
   }
 
   /**
-   * Set up all required data and start the animation.
+   * Set up all required data and start the animation (if allowed)
    */
   const init = () => {
-    el = getElement()
-    if (!prefersReducedMotion) {
-      start = getCurrentPosition()
-      distance = getTargetPosition() - start
-      counter = 0
-      step = 33 // 30~ FPS
-      if (settings.keepHash && settings.target[0] === '#') {
-        history.pushState({}, '', settings.target)
-      }
-      animationLoop()
-    } else scrollTheEl(getTargetPosition())
+    scrollingElement = getScrollingElement()
+    if (prefersReducedMotion) scrollTheEl(getTargetPosition())
+    else useAnimations()
+    setHash()
   }
 
   init()
@@ -531,32 +653,17 @@ export const stickyNav = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = Object.assign({}, defaults, options)
+  let settings = objAssign({}, defaults, options)
 
   let pos = 0
-  let scrollEl = (document.scrollingElement || document.documentElement)
+  let scrollingElement = (document.scrollingElement || document.documentElement)
   let nav = document.querySelector('.js-butr-nav')
 
   /**
-   * Basic debounce
-   * More info: https://davidwalsh.name/function-debounce
-   * @param  {function} callback
-   * @param  {int}      delay
-   * @return {function} debounced function
-   */
-  const debounce = (callback, delay) => {
-    let timeout
-    return function () {
-      let args = arguments
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        callback.apply(this, args)
-      }, delay)
-    }
-  }
-
-  /**
    * Set Y position of nav
+   *
+   * Consider distanceTop - which allows user to add some padding so the nav
+   * isn't pinned to the very top (allows user definable breathing room)
    */
   const determineYPos = () => {
     pos = nav.offsetTop - extractInt(settings.distanceTop)
@@ -564,10 +671,12 @@ export const stickyNav = options => {
 
   /**
    * Extract int from string with unit (px, em, etc)
+   *
    * @param  {string} txt
    * @return {int}    number left over from string
    */
   const extractInt = txt => {
+    if (typeof txt === 'number') return txt
     return parseInt(txt.replace(/[^0-9\.]+/g, ''))
   }
 
@@ -587,7 +696,7 @@ export const stickyNav = options => {
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    if (scrollEl.scrollTop >= pos) {
+    if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed'
       nav.style.top = settings.distanceTop
     } else {
