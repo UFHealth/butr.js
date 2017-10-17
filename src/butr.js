@@ -3,8 +3,9 @@ import objAssign from 'object-assign'
 /**
  * Basic debounce
  * More info: https://davidwalsh.name/function-debounce
+ *
  * @param  {function} callback
- * @param  {int}      delay
+ * @param  {Number}   delay
  * @return {function} debounced function
  */
 const debounce = (callback, delay) => {
@@ -21,7 +22,8 @@ const debounce = (callback, delay) => {
 /**
  * Animation function - accepts duration, callback for animation loop (each
  * frame), callback when animation is complete, and option for easing function.
- * @param  {object} options
+ *
+ * @param {object} options
  */
 const animate = options => {
   const defaults = {
@@ -67,9 +69,10 @@ const animate = options => {
    * Calculate increment based on easing
    * This method is passed to the loop callback so that it can be called
    * to get eased increments for frame updates.
-   * @param  {int} startValue
-   * @param  {int} endValue
-   * @return {int} increment
+   *
+   * @param  {Number} startValue
+   * @param  {Number} endValue
+   * @return {Number} increment
    */
   const calcIncrement = (startValue , endValue) => {
     let delta = endValue - startValue
@@ -79,7 +82,8 @@ const animate = options => {
 
   /**
    * Calculate Elapsed time
-   * @return {int} elapsed time (in ms)
+   *
+   * @return {Number} elapsed time (in ms)
    */
   const elapsed = () => {
     return Math.min((now - start) / settings.duration, 1)
@@ -667,6 +671,7 @@ export const stickyNav = options => {
 
   /**
    * Extract int from string with unit (px, em, etc)
+   *
    * @param  {string} txt
    * @return {int}    number left over from string
    */
