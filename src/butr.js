@@ -333,7 +333,7 @@ export const marker = options => {
 
   // Set defaults
   const defaults = {
-    container: false,
+    scrollingElement: false,
     duration: 400,
     callback: false,
     markerClass: '',
@@ -349,7 +349,7 @@ export const marker = options => {
   // Initialize required data
   let top
   let marker
-  let container
+  let scrollingElement
   let links
   let headings
   let nav
@@ -357,16 +357,16 @@ export const marker = options => {
   let ignoreScrollEvents = false
 
   /**
-   * Set container with el query or with default body el
+   * Set scrollingElement with el query or with default body el
    * Get other required elements.
    */
   const getRequiredElements = () => {
-    container = settings.container
-      ? document.querySelector(settings.container)
+    scrollingElement = settings.scrollingElement
+      ? document.querySelector(settings.scrollingElement)
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    headings = container.querySelectorAll('h2, h3, h4, h5, h6')
+    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
   /**
@@ -471,7 +471,7 @@ export const marker = options => {
    * Set top scroll position and use it to check which link should be active.
    */
   const updateNav = () => {
-    top = container.scrollTop
+    top = scrollingElement.scrollTop
     checkActive()
   }
 
@@ -515,7 +515,6 @@ export const to = options => {
     scrollingElement: false,
     target: 0,
     direction: 'y',
-    duration: 800,
     keepHash: true,
     callback: null,
     markerCallback: null
@@ -658,6 +657,9 @@ export const stickyNav = options => {
 
   /**
    * Set Y position of nav
+   *
+   * Consider distanceTop - which allows user to add some padding so the nav
+   * isn't pinned to the very top (allows user definable breathing room)
    */
   const determineYPos = () => {
     pos = nav.offsetTop - extractInt(settings.distanceTop)
