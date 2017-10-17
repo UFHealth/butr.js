@@ -74,6 +74,154 @@ module.exports =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.stickyNav = exports.to = exports.marker = exports.autoSidebar = exports.autoAnchors = undefined;
+
+var _objectAssign = __webpack_require__(1);
+
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Basic debounce
+ * More info: https://davidwalsh.name/function-debounce
+ *
+ * @param  {function} callback
+ * @param  {Number}   delay
+ * @return {function} debounced function
+ */
+var debounce = function debounce(callback, delay) {
+  var timeout = void 0;
+  return function () {
+    var _this = this;
+
+    var args = arguments;
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      callback.apply(_this, args);
+    }, delay);
+  };
+};
+
+/**
+ * Animation function - accepts duration, callback for animation loop (each
+ * frame), callback when animation is complete, and option for easing function.
+ *
+ * @param {object} options
+ */
+var animate = function animate(options) {
+  var defaults = {
+    duration: 800,
+    loop: null,
+    done: null,
+    easing: 'easeInOutQuad'
+
+    // Determine settings based on defaults + user provided options
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
+
+  var start = void 0;
+  var end = void 0;
+  var now = void 0;
+  var timePassed = 0;
+
+  /**
+   * Start animation - get current time, set end time (based on current) and
+   * create first frame
+   */
+  var startAnimation = function startAnimation() {
+    start = performance.now();
+    end = start + settings.duration;
+    frame();
+  };
+
+  /**
+   * Current Frame - any logic to update the frame happens here
+   * Set the now time, apply loop callback, and if now is not the end, run frame
+   * again, otherwise use done callback, if provided
+   */
+  var frame = function frame() {
+    now = performance.now();
+    settings.loop(calcIncrement);
+    if (now < end) requestAnimationFrame(frame);else {
+      if (typeof settings.done === 'function') settings.done();
+    }
+  };
+
+  /**
+   * Calculate increment based on easing
+   * This method is passed to the loop callback so that it can be called
+   * to get eased increments for frame updates.
+   *
+   * @param  {Number} startValue
+   * @param  {Number} endValue
+   * @return {Number} increment
+   */
+  var calcIncrement = function calcIncrement(startValue, endValue) {
+    var delta = endValue - startValue;
+    var eased = delta * timingFunctions[settings.easing](elapsed());
+    return startValue + eased;
+  };
+
+  /**
+   * Calculate Elapsed time
+   *
+   * @return {Number} elapsed time (in ms)
+   */
+  var elapsed = function elapsed() {
+    return Math.min((now - start) / settings.duration, 1);
+  };
+
+  /**
+   * Timing (Easing) functions
+   * https://gist.github.com/gre/1650294
+   *
+   * @type {Object}
+   */
+  var timingFunctions = {
+    linear: function linear(t) {
+      return t;
+    },
+    easeInQuad: function easeInQuad(t) {
+      return t * t;
+    },
+    easeOutQuad: function easeOutQuad(t) {
+      return t * (2 - t);
+    },
+    easeInOutQuad: function easeInOutQuad(t) {
+      return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    },
+    easeInCubic: function easeInCubic(t) {
+      return t * t * t;
+    },
+    easeOutCubic: function easeOutCubic(t) {
+      return --t * t * t + 1;
+    },
+    easeInOutCubic: function easeInOutCubic(t) {
+      return t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    },
+    easeInQuart: function easeInQuart(t) {
+      return t * t * t * t;
+    },
+    easeOutQuart: function easeOutQuart(t) {
+      return 1 - --t * t * t * t;
+    },
+    easeInOutQuart: function easeInOutQuart(t) {
+      return t < .5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+    },
+    easeInQuint: function easeInQuint(t) {
+      return t * t * t * t * t;
+    },
+    easeOutQuint: function easeOutQuint(t) {
+      return 1 + --t * t * t * t * t;
+    },
+    easeInOutQuint: function easeInOutQuint(t) {
+      return t < .5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+    }
+  };
+
+  startAnimation();
+};
+
 /**
  * butr.autoAnchors()
  *
@@ -84,12 +232,12 @@ var autoAnchors = exports.autoAnchors = function autoAnchors() {
   // Exit before for loop if there are no anchors on the page
   if (!links.length) return false;
   // When clicking a link, use butr to scroll to the element with that id
-  links.forEach(function (link) {
-    link.addEventListener('click', function (e) {
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function (e) {
       e.preventDefault();
       butr.to({ target: e.target.getAttribute('href') });
     });
-  });
+  }
 };
 
 /**
@@ -106,7 +254,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     liClass: ''
 
     // Determine settings based on defaults + user provided options
-  };var settings = Object.assign({}, defaults, options);
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
 
   var content = void 0;
   var headings = void 0;
@@ -196,9 +344,10 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    * Create tree from headings.
    */
   var createTree = function createTree() {
-    headings.forEach(function (heading, index) {
+    for (var i = 0; i < headings.length; i++) {
+      var heading = headings[i];
       var currentLevel = setCurrentLevel(heading);
-      var nextLevel = setNextLevel(index);
+      var nextLevel = setNextLevel(i);
       var item = createItem(heading);
 
       // Retrieve the list at the top of the stack and append item to it
@@ -221,14 +370,14 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
           nextLevel += errorOffset;
           // Step back the correct number of levels in the stack so the next item will
           // be added to the correct container.
-          for (var i = 0; i < currentLevel - nextLevel; i++) {
+          for (var _i = 0; _i < currentLevel - nextLevel; _i++) {
             listStack.pop();
           }
           // Reset error offset
           errorOffset = 0;
         }
       }
-    });
+    }
   };
 
   /**
@@ -257,11 +406,12 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   var createNavList = function createNavList(tree, parent) {
     var list = document.createElement('ol');
     if (settings.olClass) list.classList.add(settings.olClass);
-    tree.forEach(function (item) {
+    for (var i = 0; i < tree.length; i++) {
+      var item = tree[i];
       var li = createNavItem(item);
       if (item.children.length) createNavList(item.children, li);
       list.appendChild(li);
-    });
+    }
     parent.appendChild(list);
   };
 
@@ -287,13 +437,14 @@ var marker = exports.marker = function marker(options) {
 
   // Set defaults
   var defaults = {
-    container: false,
+    scrollingElement: false,
     duration: 400,
     callback: false,
-    markerClass: ''
+    markerClass: '',
+    activeClass: ''
 
     // Determine settings based on defaults + user provided options
-  };var settings = Object.assign({}, defaults, options);
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
 
   // User may prefer reduced motion - do not animate to scroll position
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches;
@@ -301,7 +452,7 @@ var marker = exports.marker = function marker(options) {
   // Initialize required data
   var top = void 0;
   var marker = void 0;
-  var container = void 0;
+  var scrollingElement = void 0;
   var links = void 0;
   var headings = void 0;
   var nav = void 0;
@@ -309,14 +460,14 @@ var marker = exports.marker = function marker(options) {
   var ignoreScrollEvents = false;
 
   /**
-   * Set container with el query or with default body el
+   * Set scrollingElement with el query or with default body el
    * Get other required elements.
    */
   var getRequiredElements = function getRequiredElements() {
-    container = settings.container ? document.querySelector(settings.container) : document.scrollingElement || document.documentElement;
+    scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
-    headings = container.querySelectorAll('h2, h3, h4, h5, h6');
+    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
   /**
@@ -342,7 +493,7 @@ var marker = exports.marker = function marker(options) {
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
     if (!prefersReducedMotion) {
-      marker.style.transition = settings.duration + 'ms all cubic-bezier(0.455, 0.03, 0.515, 0.955)';
+      marker.style.transition = settings.duration + 'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)';
     }
     nav.appendChild(marker);
   };
@@ -371,9 +522,9 @@ var marker = exports.marker = function marker(options) {
       links[i].addEventListener('click', function (e) {
         e.preventDefault();
         ignoreScrollEvents = true;
-        setActive(links[i].hash);
-        marker.style.height = links[i].offsetHeight + 'px';
+        setActive(links[i].hash, 'setupLinkEvents');
         butr.to({
+          duration: settings.duration,
           target: links[i].hash,
           callback: settings.callback,
           markerCallback: function markerCallback() {
@@ -399,7 +550,7 @@ var marker = exports.marker = function marker(options) {
         break;
       } else heading = headings[i];
     }
-    if (heading) setActive('#' + heading.id);
+    if (heading) setActive('#' + heading.id, 'checkActive');
   };
 
   /**
@@ -407,12 +558,14 @@ var marker = exports.marker = function marker(options) {
    *
    * @param {string} hash Section link to make active.
    */
-  var setActive = function setActive(hash) {
+  var setActive = function setActive(hash, where) {
     var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');
     var currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]');
     if (currentlyActive !== previouslyActive) {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active');
+      if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass);
       currentlyActive.classList.add('js-butr-active');
+      if (settings.activeClass) currentlyActive.classList.add(settings.activeClass);
     }
     setMarkerPosition(currentlyActive);
   };
@@ -421,23 +574,20 @@ var marker = exports.marker = function marker(options) {
    * Set top scroll position and use it to check which link should be active.
    */
   var updateNav = function updateNav() {
-    top = container.scrollTop;
+    top = scrollingElement.scrollTop;
     checkActive();
   };
 
   /**
-   * Animate the updates.
+   * Call for scrolling event
+   *
+   * Use debounce to only fire once every 50ms and not every pixel
+   * https://davidwalsh.name/javascript-debounce-function
    */
-  var animationLoop = function animationLoop() {
+  var contentScrolled = debounce(function () {
     if (ignoreScrollEvents) return;
-    if (safeToUpdate) {
-      requestAnimationFrame(function () {
-        updateNav();
-        safeToUpdate = true;
-      });
-    }
-    safeToUpdate = false;
-  };
+    updateNav();
+  }, 50);
 
   var init = function init() {
     getRequiredElements();
@@ -446,7 +596,7 @@ var marker = exports.marker = function marker(options) {
       createMarker();
       setupLinkEvents();
       updateNav();
-      window.addEventListener('scroll', animationLoop);
+      window.addEventListener('scroll', contentScrolled);
     }
   };
 
@@ -465,26 +615,23 @@ var to = exports.to = function to(options) {
 
   // Set defaults
   var defaults = {
-    el: false,
+    scrollingElement: false,
     target: 0,
     direction: 'y',
-    duration: 800,
     keepHash: true,
     callback: null,
     markerCallback: null
 
     // Determine settings based on defaults + user provided options
-  };var settings = Object.assign({}, defaults, options);
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
 
   // User may prefer reduced motion - do not animate to scroll position
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches;
 
   // Initialize required data
   var start = void 0;
-  var distance = void 0;
-  var counter = void 0;
-  var step = void 0;
-  var el = void 0;
+  var end = void 0;
+  var scrollingElement = void 0;
 
   /**
    * Set Element with query or default scrolling element.
@@ -492,16 +639,16 @@ var to = exports.to = function to(options) {
    *
    * @return {Node}
    */
-  var getElement = function getElement() {
-    return options.el ? document.querySelector(options.el) : document.scrollingElement || document.documentElement;
+  var getScrollingElement = function getScrollingElement() {
+    return options.scrollingElement ? document.querySelector(options.scrollingElement) : document.scrollingElement || document.documentElement;
   };
 
   /**
    * @return {Number} Current scroll position inside set (scrolling) element.
    */
   var getCurrentPosition = function getCurrentPosition() {
-    if (settings.direction === 'x') return el.scrollLeft;
-    if (settings.direction === 'y') return el.scrollTop;
+    if (settings.direction === 'x') return scrollingElement.scrollLeft;
+    if (settings.direction === 'y') return scrollingElement.scrollTop;
   };
 
   /**
@@ -520,103 +667,148 @@ var to = exports.to = function to(options) {
   };
 
   /**
-   * Easing function.
-   *
-   * @link  http://gizma.com/easing/#quad3
-   *
-   * @param  {Number} t Current time.
-   * @param  {Number} b Start value.
-   * @param  {Number} c Change in value.
-   * @param  {Number} d Duration.
-   * @return {Number} Amount to scroll.
-   */
-  var easing = function easing(t, b, c, d) {
-    t /= d / 2;
-    if (t < 1) return c / 2 * t * t + b;
-    t--;
-    return -c / 2 * (t * (t - 2) - 1) + b;
-  };
-
-  /**
    * Update scroll position of element.
    *
    * @param {Number} distance Amount to scroll.
    */
   var scrollTheEl = function scrollTheEl(distance) {
-    if (settings.direction === 'x') el.scrollLeft = distance;
-    if (settings.direction === 'y') el.scrollTop = distance;
+    if (settings.direction === 'x') scrollingElement.scrollLeft = distance;
+    if (settings.direction === 'y') scrollingElement.scrollTop = distance;
   };
 
   /**
-   * Animate until time is up using steps and counter for animation time.
+   * Callback passed to done option in animate function - runs markerCallback
+   * and user specified callback once the animation is done (if they're defined)
    */
-  var animationLoop = function animationLoop() {
-    counter += step;
-    scrollTheEl(easing(counter, start, distance, settings.duration));
-    if (counter < settings.duration) requestAnimationFrame(animationLoop);else {
-      if (typeof settings.callback === 'function') settings.callback();
-      if (typeof settings.markerCallback === 'function') settings.markerCallback();
+  var afterScroll = function afterScroll() {
+    if (typeof settings.callback === 'function') settings.callback();
+    if (typeof settings.markerCallback === 'function') settings.markerCallback();
+  };
+
+  /**
+   * Calculate duration based on distance, modified sqrt curve
+   * Allows more time for longer distances but trends toward a maximum time
+   * ensuring no scroll animations are excessively long even on long pages
+   * https://www.wolframalpha.com/input/?i=plot+24+*+sqrt(x)
+   *
+   * @param  {int} distance
+   * @return {int} duration (in ms)
+   */
+  var calcDuration = function calcDuration(distance) {
+    var coefficient = 24;
+    return coefficient * Math.sqrt(Math.abs(distance));
+  };
+
+  /**
+   * Animate Scroll
+   */
+  var useAnimations = function useAnimations() {
+    start = getCurrentPosition();
+    end = getTargetPosition();
+    animate({
+      duration: calcDuration(end - start),
+      loop: function loop(calcIncrement) {
+        var distance = calcIncrement(start, end);
+        scrollTheEl(distance);
+      },
+
+      done: afterScroll
+    });
+  };
+
+  /**
+   * Set hash in URL if needed
+   */
+  var setHash = function setHash() {
+    if (settings.keepHash && settings.target[0] === '#') {
+      history.pushState({}, '', settings.target);
     }
   };
 
   /**
-   * Set up all required data and start the animation.
+   * Set up all required data and start the animation (if allowed)
    */
   var init = function init() {
-    el = getElement();
-    if (!prefersReducedMotion) {
-      start = getCurrentPosition();
-      distance = getTargetPosition() - start;
-      counter = 0;
-      step = 33; // 30~ FPS
-      if (settings.keepHash && settings.target[0] === '#') {
-        history.pushState({}, '', settings.target);
-      }
-      animationLoop();
-    } else scrollTheEl(getTargetPosition());
+    scrollingElement = getScrollingElement();
+    if (prefersReducedMotion) scrollTheEl(getTargetPosition());else useAnimations();
+    setHash();
   };
 
   init();
 };
 
 /**
- * Stick sidebar to top when it hits the top of the viewport so that it stays
+ * Stick Nav to top when it hits the top of the viewport so that it stays
  * visible
  */
-var stickySidebar = exports.stickySidebar = function stickySidebar() {
+var stickyNav = exports.stickyNav = function stickyNav(options) {
+
+  // Set defaults
+  var defaults = {
+    distanceTop: 0
+
+    // Determine settings based on defaults + user provided options
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
+
   var pos = 0;
-  var sidebar = document.querySelector('.js-butr-nav');
+  var scrollingElement = document.scrollingElement || document.documentElement;
+  var nav = document.querySelector('.js-butr-nav');
 
   /**
-   * Set Y position of sidebar
+   * Set Y position of nav
+   *
+   * Consider distanceTop - which allows user to add some padding so the nav
+   * isn't pinned to the very top (allows user definable breathing room)
    */
   var determineYPos = function determineYPos() {
-    var rect = sidebar.getBoundingClientRect();
-    pos = rect.top;
+    pos = nav.offsetTop - extractInt(settings.distanceTop);
   };
 
   /**
-   * Set or remove classes to stick sidebar based on scroll position
+   * Extract int from string with unit (px, em, etc)
+   *
+   * @param  {string} txt
+   * @return {int}    number left over from string
+   */
+  var extractInt = function extractInt(txt) {
+    if (typeof txt === 'number') return txt;
+    return parseInt(txt.replace(/[^0-9\.]+/g, ''));
+  };
+
+  /**
+   * Calculate width of nav based on parent container
+   * Function is debounced to prevent excessive calls during scroll
+   */
+  var setWidth = debounce(function () {
+    var parentStyle = window.getComputedStyle(nav.parentNode, null);
+    var paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'));
+    var paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'));
+    var width = extractInt(parentStyle.getPropertyValue('width'));
+    nav.style.maxWidth = width - paddingLeft - paddingRight + 'px';
+  }, 250);
+
+  /**
+   * Set or remove classes to stick nav based on scroll position
    */
   var determineStickiness = function determineStickiness() {
-    var scrollEl = document.scrollingElement || document.documentElement;
-    if (scrollEl.scrollTop > pos) {
-      sidebar.style.position = 'fixed';
-      sidebar.style.top = 0;
+    if (scrollingElement.scrollTop >= pos) {
+      nav.style.position = 'fixed';
+      nav.style.top = settings.distanceTop;
     } else {
-      sidebar.style.position = 'relative';
-      sidebar.style.top = 'auto';
+      nav.style.position = 'relative';
+      nav.style.top = 'auto';
     }
   };
 
   /**
-   * Start up sticky sidebar
+   * Start up sticky nav
    */
   var init = function init() {
     determineYPos();
-    // Before scrolling decide if it needs to be sticky right away
     determineStickiness();
+    setWidth();
     window.addEventListener('scroll', determineStickiness);
+    window.addEventListener('resize', setWidth);
   };
 
   init();
@@ -629,6 +821,103 @@ exports.default = {
   stickySidebar: stickySidebar,
   to: to
 };
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
 
 /***/ })
 /******/ ]);

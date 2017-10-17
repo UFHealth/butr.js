@@ -7,7 +7,7 @@ Butr is a tiny (3kb~) JavaScript package that can:
 - Smoothly animate scroll to any location or element - like butter ;)
 - Automatically animate scroll on any anchor with the `data-butr` attribute
 
-(Documentation)[https://ufhealth.github.io/butr-site/]
+[Documentation](https://ufhealth.github.io/butr-site/)
 
 
 
