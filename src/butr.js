@@ -718,3 +718,11 @@ export const stickyNav = options => {
 
   init()
 }
+
+export default {
+  autoAnchors,
+  autoSidebar,
+  marker,
+  stickySidebar,
+  to
+}
