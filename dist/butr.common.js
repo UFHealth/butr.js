@@ -818,7 +818,7 @@ exports.default = {
   autoAnchors: autoAnchors,
   autoSidebar: autoSidebar,
   marker: marker,
-  stickySidebar: stickySidebar,
+  stickyNav: stickyNav,
   to: to
 };
 
