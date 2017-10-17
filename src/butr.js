@@ -1,6 +1,29 @@
 import objAssign from 'object-assign'
 
-export const animate = options => {
+/**
+ * Basic debounce
+ * More info: https://davidwalsh.name/function-debounce
+ * @param  {function} callback
+ * @param  {int}      delay
+ * @return {function} debounced function
+ */
+const debounce = (callback, delay) => {
+  let timeout
+  return function () {
+    let args = arguments
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      callback.apply(this, args)
+    }, delay)
+  }
+}
+
+/**
+ * Animation function - accepts duration, callback for animation loop (each
+ * frame), callback when animation is complete, and option for easing function.
+ * @param  {object} options
+ */
+const animate = options => {
   const defaults = {
     duration: 800,
     loop: null,
@@ -16,12 +39,21 @@ export const animate = options => {
   let now
   let timePassed = 0
 
+  /**
+   * Start animation - get current time, set end time (based on current) and
+   * create first frame
+   */
   const startAnimation = () => {
     start = performance.now()
     end = start + settings.duration
     frame()
   }
 
+  /**
+   * Current Frame - any logic to update the frame happens here
+   * Set the now time, apply loop callback, and if now is not the end, run frame
+   * again, otherwise use done callback, if provided
+   */
   const frame = () => {
     now = performance.now()
     settings.loop(calcIncrement)
@@ -31,16 +63,34 @@ export const animate = options => {
     }
   }
 
+  /**
+   * Calculate increment based on easing
+   * This method is passed to the loop callback so that it can be called
+   * to get eased increments for frame updates.
+   * @param  {int} startValue
+   * @param  {int} endValue
+   * @return {int} increment
+   */
   const calcIncrement = (startValue , endValue) => {
     let delta = endValue - startValue
     let eased = delta * timingFunctions[settings.easing](elapsed())
     return startValue + eased
   }
 
+  /**
+   * Calculate Elapsed time
+   * @return {int} elapsed time (in ms)
+   */
   const elapsed = () => {
     return Math.min((now - start) / settings.duration, 1)
   }
 
+  /**
+   * Timing (Easing) functions
+   * https://gist.github.com/gre/1650294
+   *
+   * @type {Object}
+   */
   const timingFunctions = {
     linear (t) { return t },
     easeInQuad (t) { return t*t },
@@ -355,7 +405,7 @@ export const marker = options => {
    * @param {Node} activeLink currently active link
    */
   const setMarkerPosition = activeLink => {
-    marker.style.transform = 'translateY(' + activeLink.offsetTop + 'px)'
+    marker.style.transform = `translateY(${activeLink.offsetTop}px)`
   }
 
   /**
@@ -373,8 +423,7 @@ export const marker = options => {
       links[i].addEventListener('click', e => {
         e.preventDefault()
         ignoreScrollEvents = true
-        setActive(links[i].hash)
-        // marker.style.height = links[i].offsetHeight + 'px'
+        setActive(links[i].hash, 'setupLinkEvents')
         butr.to({
           duration: settings.duration,
           target: links[i].hash,
@@ -398,7 +447,7 @@ export const marker = options => {
         break
       } else heading = headings[i]
     }
-    if (heading) setActive('#' + heading.id)
+    if (heading) setActive('#' + heading.id, 'checkActive')
   }
 
   /**
@@ -406,7 +455,7 @@ export const marker = options => {
    *
    * @param {string} hash Section link to make active.
    */
-  const setActive = hash => {
+  const setActive = (hash, where) => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
     if (currentlyActive !== previouslyActive) {
@@ -427,18 +476,15 @@ export const marker = options => {
   }
 
   /**
-   * Animate the updates.
+   * Call for scrolling event
+   *
+   * Use debounce to only fire once every 50ms and not every pixel
+   * https://davidwalsh.name/javascript-debounce-function
    */
-  const animationLoop = () => {
+  const contentScrolled = debounce(() => {
     if (ignoreScrollEvents) return
-    if (safeToUpdate) {
-      requestAnimationFrame(() => {
-        updateNav()
-        safeToUpdate = true
-      })
-    }
-    safeToUpdate = false
-  }
+    updateNav()
+  }, 50)
 
   const init = () => {
     getRequiredElements()
@@ -447,7 +493,7 @@ export const marker = options => {
       createMarker()
       setupLinkEvents()
       updateNav()
-      window.addEventListener('scroll', animationLoop)
+      window.addEventListener('scroll', contentScrolled)
     }
   }
 
@@ -466,7 +512,7 @@ export const to = options => {
 
   // Set defaults
   const defaults = {
-    el: false,
+    scrollingElement: false,
     target: 0,
     direction: 'y',
     duration: 800,
@@ -484,7 +530,7 @@ export const to = options => {
   // Initialize required data
   let start
   let end
-  let el
+  let scrollingElement
 
   /**
    * Set Element with query or default scrolling element.
@@ -492,9 +538,9 @@ export const to = options => {
    *
    * @return {Node}
    */
-  const getElement = () => {
-    return options.el
-      ? document.querySelector(options.el)
+  const getScrollingElement = () => {
+    return options.scrollingElement
+      ? document.querySelector(options.scrollingElement)
       : document.scrollingElement || document.documentElement
   }
 
@@ -502,8 +548,8 @@ export const to = options => {
    * @return {Number} Current scroll position inside set (scrolling) element.
    */
   const getCurrentPosition = () => {
-    if (settings.direction === 'x') return el.scrollLeft
-    if (settings.direction === 'y') return el.scrollTop
+    if (settings.direction === 'x') return scrollingElement.scrollLeft
+    if (settings.direction === 'y') return scrollingElement.scrollTop
   }
 
   /**
@@ -527,32 +573,66 @@ export const to = options => {
    * @param {Number} distance Amount to scroll.
    */
   const scrollTheEl = distance => {
-    if (settings.direction === 'x') el.scrollLeft = distance
-    if (settings.direction === 'y') el.scrollTop = distance
+    if (settings.direction === 'x') scrollingElement.scrollLeft = distance
+    if (settings.direction === 'y') scrollingElement.scrollTop = distance
   }
 
   /**
-   * Set up all required data and start the animation.
+   * Callback passed to done option in animate function - runs markerCallback
+   * and user specified callback once the animation is done (if they're defined)
+   */
+  const afterScroll = () => {
+    if (typeof settings.callback === 'function') settings.callback()
+    if (typeof settings.markerCallback === 'function') settings.markerCallback()
+  }
+
+  /**
+   * Calculate duration based on distance, modified sqrt curve
+   * Allows more time for longer distances but trends toward a maximum time
+   * ensuring no scroll animations are excessively long even on long pages
+   * https://www.wolframalpha.com/input/?i=plot+24+*+sqrt(x)
+   *
+   * @param  {int} distance
+   * @return {int} duration (in ms)
+   */
+  const calcDuration = distance => {
+    let coefficient = 24
+    return coefficient * Math.sqrt(Math.abs(distance))
+  }
+
+  /**
+   * Animate Scroll
+   */
+  const useAnimations = () => {
+    start = getCurrentPosition()
+    end = getTargetPosition()
+    animate({
+      duration: calcDuration(end - start),
+      loop (calcIncrement) {
+        let distance = calcIncrement(start, end)
+        scrollTheEl(distance)
+      },
+      done: afterScroll
+    })
+  }
+
+  /**
+   * Set hash in URL if needed
+   */
+  const setHash = () => {
+    if (settings.keepHash && settings.target[0] === '#') {
+      history.pushState({}, '', settings.target)
+    }
+  }
+
+  /**
+   * Set up all required data and start the animation (if allowed)
    */
   const init = () => {
-    el = getElement()
-    if (!prefersReducedMotion) {
-      start = getCurrentPosition()
-      end = getTargetPosition()
-      animate({
-        loop (calcIncrement) {
-          let distance = calcIncrement(start, end)
-          scrollTheEl(distance)
-        },
-        done () {
-          if (typeof settings.callback === 'function') settings.callback()
-          if (typeof settings.markerCallback === 'function') settings.markerCallback()
-        }
-      })
-      if (settings.keepHash && settings.target[0] === '#') {
-        history.pushState({}, '', settings.target)
-      }
-    } else scrollTheEl(getTargetPosition())
+    scrollingElement = getScrollingElement()
+    if (prefersReducedMotion) scrollTheEl(getTargetPosition())
+    else useAnimations()
+    setHash()
   }
 
   init()
@@ -573,26 +653,8 @@ export const stickyNav = options => {
   let settings = objAssign({}, defaults, options)
 
   let pos = 0
-  let scrollEl = (document.scrollingElement || document.documentElement)
+  let scrollingElement = (document.scrollingElement || document.documentElement)
   let nav = document.querySelector('.js-butr-nav')
-
-  /**
-   * Basic debounce
-   * More info: https://davidwalsh.name/function-debounce
-   * @param  {function} callback
-   * @param  {int}      delay
-   * @return {function} debounced function
-   */
-  const debounce = (callback, delay) => {
-    let timeout
-    return function () {
-      let args = arguments
-      clearTimeout(timeout)
-      timeout = setTimeout(() => {
-        callback.apply(this, args)
-      }, delay)
-    }
-  }
 
   /**
    * Set Y position of nav
@@ -607,6 +669,7 @@ export const stickyNav = options => {
    * @return {int}    number left over from string
    */
   const extractInt = txt => {
+    if (typeof txt === 'number') return txt
     return parseInt(txt.replace(/[^0-9\.]+/g, ''))
   }
 
@@ -626,7 +689,7 @@ export const stickyNav = options => {
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    if (scrollEl.scrollTop >= pos) {
+    if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed'
       nav.style.top = settings.distanceTop
     } else {
