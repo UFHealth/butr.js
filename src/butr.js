@@ -723,6 +723,6 @@ export default {
   autoAnchors,
   autoSidebar,
   marker,
-  stickySidebar,
+  stickyNav,
   to
 }
