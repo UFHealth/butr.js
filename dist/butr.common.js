@@ -292,7 +292,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    * @return {string} The #heading-hash.
    */
   var createHash = function createHash(heading) {
-    if (!heading.id) heading.id = generateId(heading.innerText);
+    if (!heading.id) heading.id = generateId(heading.textContent);
     return '#' + heading.id;
   };
 
@@ -345,7 +345,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    */
   var createItem = function createItem(heading) {
     return {
-      label: heading.innerText,
+      label: heading.textContent,
       hash: createHash(heading),
       children: []
     };
