@@ -615,7 +615,7 @@ export const to = options => {
    * @return {int} duration (in ms)
    */
   const calcDuration = distance => {
-    let coefficient = 24 * speed
+    let coefficient = 24 * settings.speed
     return coefficient * Math.sqrt(Math.abs(distance))
   }
 
