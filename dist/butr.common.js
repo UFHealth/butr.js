@@ -82,6 +82,7 @@ var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// Track when animating to prevent excessive calls
 var animating = false;
 
 /**
@@ -157,6 +158,7 @@ var animate = function animate(options) {
     now = performance.now();
     settings.loop(calcIncrement);
     if (now < end) requestAnimationFrame(frame);else {
+      // Animation is done
       animating = false;
       if (typeof settings.done === 'function') settings.done();
     }
@@ -266,7 +268,8 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   // Set defaults
   var defaults = {
     olClass: '',
-    liClass: ''
+    liClass: '',
+    aClass: ''
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -408,6 +411,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     a.setAttribute('data-butr', true);
     a.innerText = heading.label;
     a.classList.add('js-butr-link');
+    if (settings.aClass) appendClasses(a, settings.aClass);
     if (settings.liClass) appendClasses(li, settings.liClass);
     li.appendChild(a);
     return li;
@@ -470,6 +474,7 @@ var marker = exports.marker = function marker(options) {
   var marker = void 0;
   var scrollingElement = void 0;
   var links = void 0;
+  var content = void 0;
   var headings = void 0;
   var nav = void 0;
 
@@ -481,7 +486,8 @@ var marker = exports.marker = function marker(options) {
     scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
-    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6');
+    content = document.querySelector('.js-butr-container');
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
   /**
@@ -582,6 +588,7 @@ var marker = exports.marker = function marker(options) {
    * https://davidwalsh.name/javascript-debounce-function
    */
   var contentScrolled = debounce(function () {
+    // If it's animating don't try to update active nav
     if (!animating) updateNav();
   }, 50);
 
@@ -615,8 +622,7 @@ var to = exports.to = function to(options) {
     target: 0,
     direction: 'y',
     keepHash: true,
-    callback: null,
-    markerCallback: null
+    callback: null
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -673,12 +679,11 @@ var to = exports.to = function to(options) {
   };
 
   /**
-   * Callback passed to done option in animate function - runs markerCallback
-   * and user specified callback once the animation is done (if they're defined)
+   * Callback passed to done option in animate function - runs user specified
+   * callback once the animation is done (if it's defined)
    */
   var afterScroll = function afterScroll() {
     if (typeof settings.callback === 'function') settings.callback();
-    if (typeof settings.markerCallback === 'function') settings.markerCallback();
   };
 
   /**
