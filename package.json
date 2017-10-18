@@ -1,6 +1,6 @@
 {
   "name": "butr",
-  "version": "0.8.6",
+  "version": "0.9.0",
   "description": "Scroll like butter",
   "contributors": [
     "Bill Columbia <hello@billcolumbia.com>",
@@ -9,6 +9,7 @@
   "license": "MIT",
   "repository": "github:ufhealth/butr",
   "main": "dist/butr.common.js",
+  "jsnext:main": "src/butr.js",
   "module": "src/butr.js",
   "files": [
     "src",
