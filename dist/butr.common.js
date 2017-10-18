@@ -835,7 +835,9 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
    * Set or remove classes to stick nav based on scroll position
    */
   var determineStickiness = function determineStickiness() {
-    if ((!settings.mediaQuery || matchMedia(settings.mediaQuery).matches) && scrollingElement.scrollTop >= pos) {
+    if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
+      isSticky = true;
+    } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
       isSticky = true;
     } else {
       isSticky = false;
@@ -847,8 +849,6 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
       nav.style.position = 'relative';
       nav.style.top = 'auto';
     }
-    // Recalculate width
-    setWidth();
   };
 
   /**
@@ -857,8 +857,10 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
   var init = function init() {
     determineYPos();
     determineStickiness();
+    setWidth();
     window.addEventListener('scroll', determineStickiness);
     window.addEventListener('resize', determineStickiness);
+    window.addEventListener('resize', setWidth);
   };
 
   init();
