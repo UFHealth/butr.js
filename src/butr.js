@@ -483,13 +483,17 @@ export const marker = options => {
   const setActive = hash => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
-    if (currentlyActive !== previouslyActive) {
-      if (previouslyActive) previouslyActive.classList.remove('js-butr-active')
-      if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
+    if (currentlyActive === previouslyActive) return
+
+    if (previouslyActive) {
+      previouslyActive.classList.remove('js-butr-active')
+      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
+    }
+    if (currentlyActive) {
       currentlyActive.classList.add('js-butr-active')
       if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass)
+      setMarkerPosition(currentlyActive)
     }
-    setMarkerPosition(currentlyActive)
   }
 
   /**
