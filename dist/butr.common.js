@@ -235,7 +235,7 @@ var autoAnchors = exports.autoAnchors = function autoAnchors() {
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener('click', function (e) {
       e.preventDefault();
-      butr.to({ target: e.target.getAttribute('href') });
+      to({ target: e.target.getAttribute('href') });
     });
   }
 };
@@ -523,7 +523,7 @@ var marker = exports.marker = function marker(options) {
         e.preventDefault();
         ignoreScrollEvents = true;
         setActive(links[i].hash, 'setupLinkEvents');
-        butr.to({
+        to({
           duration: settings.duration,
           target: links[i].hash,
           callback: settings.callback,
