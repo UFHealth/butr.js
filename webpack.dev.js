@@ -4,8 +4,9 @@ const webpack = require('webpack')
 module.exports = {
   entry: './src/butr.js',
   devServer: {
-    contentBase: './public',
+    contentBase: './test',
     hot: true,
+    host: '0.0.0.0',
     watchContentBase: true,
     port: 5000
   },
@@ -28,6 +29,7 @@ module.exports = {
     filename: 'butr.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/dist/',
+    libraryTarget: 'window',
     library: 'butr'
   },
   plugins: [
