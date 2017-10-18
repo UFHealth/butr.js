@@ -152,7 +152,7 @@ export const autoAnchors = options => {
   for (let i = 0; i < links.length; i++) {
     links[i].addEventListener('click', e => {
       e.preventDefault()
-      to(objAssign(settings.to, { target: e.target.getAttribute('href') }))
+      to(objAssign(settings.to, { target: e.currentTarget.getAttribute('href') }))
     })
   }
 }
