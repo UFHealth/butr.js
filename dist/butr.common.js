@@ -262,7 +262,8 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   // Set defaults
   var defaults = {
     olClass: '',
-    liClass: ''
+    liClass: '',
+    aClass: ''
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -403,6 +404,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     a.href = heading.hash;
     a.innerText = heading.label;
     a.classList.add('js-butr-link');
+    if (settings.aClass) appendClasses(a, settings.aClass);
     if (settings.liClass) appendClasses(li, settings.liClass);
     li.appendChild(a);
     return li;

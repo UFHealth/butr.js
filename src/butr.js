@@ -154,7 +154,8 @@ export const autoSidebar = options => {
   // Set defaults
   const defaults = {
     olClass: '',
-    liClass: ''
+    liClass: '',
+    aClass: '',
   }
 
   // Determine settings based on defaults + user provided options
@@ -303,6 +304,7 @@ export const autoSidebar = options => {
     a.href = heading.hash
     a.innerText = heading.label
     a.classList.add('js-butr-link')
+    if (settings.aClass) appendClasses(a, settings.aClass)
     if (settings.liClass) appendClasses(li, settings.liClass)
     li.appendChild(a)
     return li
