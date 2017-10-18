@@ -127,7 +127,7 @@ export const autoAnchors = () => {
   for (let i = 0; i < links.length; i++) {
     links[i].addEventListener('click', e => {
       e.preventDefault()
-      butr.to({ target: e.target.getAttribute('href') })
+      to({ target: e.target.getAttribute('href') })
     })
   }
 }
@@ -428,7 +428,7 @@ export const marker = options => {
         e.preventDefault()
         ignoreScrollEvents = true
         setActive(links[i].hash, 'setupLinkEvents')
-        butr.to({
+        to({
           duration: settings.duration,
           target: links[i].hash,
           callback: settings.callback,
