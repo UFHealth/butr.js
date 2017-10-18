@@ -82,6 +82,8 @@ var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var animating = false;
+
 /**
  * Basic debounce
  * More info: https://davidwalsh.name/function-debounce
@@ -140,6 +142,7 @@ var animate = function animate(options) {
    * create first frame
    */
   var startAnimation = function startAnimation() {
+    animating = true;
     start = performance.now();
     end = start + settings.duration;
     frame();
@@ -154,6 +157,7 @@ var animate = function animate(options) {
     now = performance.now();
     settings.loop(calcIncrement);
     if (now < end) requestAnimationFrame(frame);else {
+      animating = false;
       if (typeof settings.done === 'function') settings.done();
     }
   };
@@ -401,6 +405,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     var li = document.createElement('li');
     var a = document.createElement('a');
     a.href = heading.hash;
+    a.setAttribute('data-butr', true);
     a.innerText = heading.label;
     a.classList.add('js-butr-link');
     if (settings.liClass) appendClasses(li, settings.liClass);
@@ -467,8 +472,6 @@ var marker = exports.marker = function marker(options) {
   var links = void 0;
   var headings = void 0;
   var nav = void 0;
-  var safeToUpdate = true;
-  var ignoreScrollEvents = false;
 
   /**
    * Set scrollingElement with el query or with default body el
@@ -519,29 +522,12 @@ var marker = exports.marker = function marker(options) {
   };
 
   /**
-   * When a link is clicked, set active link and animate scroll to the anchor
-   * You could just put the data-butr on these links to get animated
-   * scrolling, but you wouldn't get the option to send ignoreScrollEvents in a
-   * callback. Ignoring scroll events helps when you scroll to a section
-   * (usually the last) that wont make it to the top of the page. If you relied
-   * on scroll position it would never get highlighted by the marker, so instead
-   * we highlight it and stop watching scroll events while animating to it, then
-   * turn them back on.
+   * When a link is clicked - set active link
    */
   var setupLinkEvents = function setupLinkEvents() {
     var _loop = function _loop(i) {
       links[i].addEventListener('click', function (e) {
-        e.preventDefault();
-        ignoreScrollEvents = true;
-        setActive(links[i].hash, 'setupLinkEvents');
-        to({
-          duration: settings.duration,
-          target: links[i].hash,
-          callback: settings.callback,
-          markerCallback: function markerCallback() {
-            ignoreScrollEvents = false;
-          }
-        });
+        setActive(links[i].hash);
       });
     };
 
@@ -561,7 +547,7 @@ var marker = exports.marker = function marker(options) {
         break;
       } else heading = headings[i];
     }
-    if (heading) setActive('#' + heading.id, 'checkActive');
+    if (heading) setActive('#' + heading.id);
   };
 
   /**
@@ -569,7 +555,7 @@ var marker = exports.marker = function marker(options) {
    *
    * @param {string} hash Section link to make active.
    */
-  var setActive = function setActive(hash, where) {
+  var setActive = function setActive(hash) {
     var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');
     var currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]');
     if (currentlyActive !== previouslyActive) {
@@ -596,8 +582,7 @@ var marker = exports.marker = function marker(options) {
    * https://davidwalsh.name/javascript-debounce-function
    */
   var contentScrolled = debounce(function () {
-    if (ignoreScrollEvents) return;
-    updateNav();
+    if (!animating) updateNav();
   }, 50);
 
   var init = function init() {

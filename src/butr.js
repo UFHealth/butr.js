@@ -1,5 +1,8 @@
 import objAssign from 'object-assign'
 
+// Track when animating to prevent excessive calls
+let animating = false
+
 /**
  * Basic debounce
  * More info: https://davidwalsh.name/function-debounce
@@ -57,6 +60,7 @@ const animate = options => {
    * create first frame
    */
   const startAnimation = () => {
+    animating = true
     start = performance.now()
     end = start + settings.duration
     frame()
@@ -72,6 +76,8 @@ const animate = options => {
     settings.loop(calcIncrement)
     if (now < end) requestAnimationFrame(frame)
     else {
+      // Animation is done
+      animating = false
       if (typeof settings.done === 'function') settings.done()
     }
   }
@@ -301,6 +307,7 @@ export const autoSidebar = options => {
     let li = document.createElement('li')
     let a = document.createElement('a')
     a.href = heading.hash
+    a.setAttribute('data-butr', true)
     a.innerText = heading.label
     a.classList.add('js-butr-link')
     if (settings.liClass) appendClasses(li, settings.liClass)
@@ -368,8 +375,6 @@ export const marker = options => {
   let links
   let headings
   let nav
-  let safeToUpdate = true
-  let ignoreScrollEvents = false
 
   /**
    * Set scrollingElement with el query or with default body el
@@ -424,29 +429,12 @@ export const marker = options => {
   }
 
   /**
-   * When a link is clicked, set active link and animate scroll to the anchor
-   * You could just put the data-butr on these links to get animated
-   * scrolling, but you wouldn't get the option to send ignoreScrollEvents in a
-   * callback. Ignoring scroll events helps when you scroll to a section
-   * (usually the last) that wont make it to the top of the page. If you relied
-   * on scroll position it would never get highlighted by the marker, so instead
-   * we highlight it and stop watching scroll events while animating to it, then
-   * turn them back on.
+   * When a link is clicked - set active link
    */
   const setupLinkEvents = () => {
     for (let i = 0; i < links.length; i++) {
       links[i].addEventListener('click', e => {
-        e.preventDefault()
-        ignoreScrollEvents = true
-        setActive(links[i].hash, 'setupLinkEvents')
-        to({
-          duration: settings.duration,
-          target: links[i].hash,
-          callback: settings.callback,
-          markerCallback: () => {
-            ignoreScrollEvents = false
-          }
-        })
+        setActive(links[i].hash)
       })
     }
   }
@@ -462,7 +450,7 @@ export const marker = options => {
         break
       } else heading = headings[i]
     }
-    if (heading) setActive('#' + heading.id, 'checkActive')
+    if (heading) setActive('#' + heading.id)
   }
 
   /**
@@ -470,7 +458,7 @@ export const marker = options => {
    *
    * @param {string} hash Section link to make active.
    */
-  const setActive = (hash, where) => {
+  const setActive = hash => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
     if (currentlyActive !== previouslyActive) {
@@ -497,8 +485,8 @@ export const marker = options => {
    * https://davidwalsh.name/javascript-debounce-function
    */
   const contentScrolled = debounce(() => {
-    if (ignoreScrollEvents) return
-    updateNav()
+    // If it's animating don't try to update active nav
+    if (!animating) updateNav()
   }, 50)
 
   const init = () => {
@@ -531,8 +519,7 @@ export const to = options => {
     target: 0,
     direction: 'y',
     keepHash: true,
-    callback: null,
-    markerCallback: null
+    callback: null
   }
 
   // Determine settings based on defaults + user provided options
@@ -592,12 +579,11 @@ export const to = options => {
   }
 
   /**
-   * Callback passed to done option in animate function - runs markerCallback
-   * and user specified callback once the animation is done (if they're defined)
+   * Callback passed to done option in animate function - runs user specified
+   * callback once the animation is done (if it's defined)
    */
   const afterScroll = () => {
     if (typeof settings.callback === 'function') settings.callback()
-    if (typeof settings.markerCallback === 'function') settings.markerCallback()
   }
 
   /**
