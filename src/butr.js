@@ -154,7 +154,8 @@ export const autoSidebar = options => {
   // Set defaults
   const defaults = {
     olClass: '',
-    liClass: ''
+    liClass: '',
+    aClass: '',
   }
 
   // Determine settings based on defaults + user provided options
@@ -190,7 +191,7 @@ export const autoSidebar = options => {
    * @return {string} The #heading-hash.
    */
   const createHash = heading => {
-    if (!heading.id) heading.id = generateId(heading.innerText)
+    if (!heading.id) heading.id = generateId(heading.textContent)
     return '#' + heading.id
   }
 
@@ -245,7 +246,7 @@ export const autoSidebar = options => {
    */
   const createItem = heading => {
     return {
-      label: heading.innerText,
+      label: heading.textContent,
       hash: createHash(heading),
       children: []
     }
@@ -303,6 +304,7 @@ export const autoSidebar = options => {
     a.href = heading.hash
     a.innerText = heading.label
     a.classList.add('js-butr-link')
+    if (settings.aClass) appendClasses(a, settings.aClass)
     if (settings.liClass) appendClasses(li, settings.liClass)
     li.appendChild(a)
     return li
@@ -366,6 +368,7 @@ export const marker = options => {
   let marker
   let scrollingElement
   let links
+  let content
   let headings
   let nav
   let safeToUpdate = true
@@ -381,7 +384,8 @@ export const marker = options => {
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6')
+    content = document.querySelector('.js-butr-container')
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
   /**
@@ -621,6 +625,8 @@ export const to = options => {
   const useAnimations = () => {
     start = getCurrentPosition()
     end = getTargetPosition()
+    // Don't scroll nowhere if ya don needa chile'
+    if (end === start) return
     animate({
       duration: calcDuration(end - start),
       loop (calcIncrement) {
@@ -710,7 +716,7 @@ export const stickyNav = options => {
   const determineStickiness = () => {
     if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed'
-      nav.style.top = settings.distanceTop
+      nav.style.top = extractInt(settings.distanceTop) + 'px'
     } else {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
