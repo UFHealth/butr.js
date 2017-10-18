@@ -292,7 +292,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    * @return {string} The #heading-hash.
    */
   var createHash = function createHash(heading) {
-    if (!heading.id) heading.id = generateId(heading.innerText);
+    if (!heading.id) heading.id = generateId(heading.textContent);
     return '#' + heading.id;
   };
 
@@ -345,7 +345,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    */
   var createItem = function createItem(heading) {
     return {
-      label: heading.innerText,
+      label: heading.textContent,
       hash: createHash(heading),
       children: []
     };
@@ -806,7 +806,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
   var determineStickiness = function determineStickiness() {
     if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed';
-      nav.style.top = settings.distanceTop;
+      nav.style.top = extractInt(settings.distanceTop) + 'px';
     } else {
       nav.style.position = 'relative';
       nav.style.top = 'auto';

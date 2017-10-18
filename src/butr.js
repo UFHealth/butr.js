@@ -190,7 +190,7 @@ export const autoSidebar = options => {
    * @return {string} The #heading-hash.
    */
   const createHash = heading => {
-    if (!heading.id) heading.id = generateId(heading.innerText)
+    if (!heading.id) heading.id = generateId(heading.textContent)
     return '#' + heading.id
   }
 
@@ -245,7 +245,7 @@ export const autoSidebar = options => {
    */
   const createItem = heading => {
     return {
-      label: heading.innerText,
+      label: heading.textContent,
       hash: createHash(heading),
       children: []
     }
@@ -711,7 +711,7 @@ export const stickyNav = options => {
   const determineStickiness = () => {
     if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed'
-      nav.style.top = settings.distanceTop
+      nav.style.top = extractInt(settings.distanceTop) + 'px'
     } else {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
