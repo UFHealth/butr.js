@@ -756,8 +756,6 @@ export const stickyNav = options => {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
     }
-    // Recalculate width
-    setWidth()
   }
 
   /**
@@ -766,8 +764,10 @@ export const stickyNav = options => {
   const init = () => {
     determineYPos()
     determineStickiness()
+    setWidth()
     window.addEventListener('scroll', determineStickiness)
     window.addEventListener('resize', determineStickiness)
+    window.addEventListener('resize', setWidth)
   }
 
   init()
