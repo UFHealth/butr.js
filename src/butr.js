@@ -20,6 +20,17 @@ const debounce = (callback, delay) => {
 }
 
 /**
+ * Append Class to HTML Element
+ * @param  {object} el
+ * @param  {string} classes
+ */
+const appendClasses = (el, classes) => {
+  let classStr = el.className + (' ' + classes)
+  // Remove whitespace at beginning an end (if there is any) to keep it clean
+  el.className = classStr.trim()
+}
+
+/**
  * Animation function - accepts duration, callback for animation loop (each
  * frame), callback when animation is complete, and option for easing function.
  *
@@ -292,7 +303,7 @@ export const autoSidebar = options => {
     a.href = heading.hash
     a.innerText = heading.label
     a.classList.add('js-butr-link')
-    if (settings.liClass) li.classList.add(settings.liClass)
+    if (settings.liClass) appendClasses(li, settings.liClass)
     li.appendChild(a)
     return li
   }
@@ -305,7 +316,7 @@ export const autoSidebar = options => {
    */
   const createNavList = (tree, parent) => {
     let list = document.createElement('ol')
-    if (settings.olClass) list.classList.add(settings.olClass)
+    if (settings.olClass) appendClasses(list, settings.olClass)
     for (let i = 0; i < tree.length; i++) {
       let item = tree[i]
       let li = createNavItem(item)
@@ -391,7 +402,7 @@ export const marker = options => {
   const createMarker = () => {
     marker = document.createElement('div')
     marker.classList.add('js-butr-marker')
-    if (settings.markerClass) marker.classList.add(settings.markerClass)
+    if (settings.markerClass) appendClasses(marker, settings.markerClass)
     marker.style.height = links[0].offsetHeight + 'px'
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
@@ -466,7 +477,7 @@ export const marker = options => {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active')
       if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
       currentlyActive.classList.add('js-butr-active')
-      if (settings.activeClass) currentlyActive.classList.add(settings.activeClass)
+      if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass)
     }
     setMarkerPosition(currentlyActive)
   }
