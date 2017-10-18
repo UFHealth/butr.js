@@ -191,12 +191,23 @@ export const autoSidebar = options => {
    * @return {string} Slugified text for use as an ID attribute.
    */
   const generateId = text => {
-    return text.toLowerCase()
+    // Generate ID from text
+    let generated = text.toLowerCase()
       .replace(/\s+/g, '-')
+      .replace(/(\d)\./g, '$1-')
       .replace(/[^\w\-]+/g, '')
       .replace(/\-\-+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
+
+    // Guarantee a unique ID
+    let id = generated
+    let i = 0
+    while (document.getElementById(id)) {
+      id = generated + '-' + ++i
+    }
+
+    return id
   }
 
   /**
