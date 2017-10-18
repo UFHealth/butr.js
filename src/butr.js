@@ -530,6 +530,7 @@ export const to = options => {
     scrollingElement: false,
     target: 0,
     direction: 'y',
+    speed: 1,
     keepHash: true,
     callback: null,
     markerCallback: null
@@ -610,7 +611,7 @@ export const to = options => {
    * @return {int} duration (in ms)
    */
   const calcDuration = distance => {
-    let coefficient = 24
+    let coefficient = 24 * speed
     return coefficient * Math.sqrt(Math.abs(distance))
   }
 
