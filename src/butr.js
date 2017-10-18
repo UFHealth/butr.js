@@ -685,6 +685,7 @@ export const stickyNav = options => {
   let pos = 0
   let scrollingElement = (document.scrollingElement || document.documentElement)
   let nav = document.querySelector('.js-butr-nav')
+  let isSticky = false
 
   /**
    * Set Y position of nav
@@ -712,30 +713,37 @@ export const stickyNav = options => {
    * Function is debounced to prevent excessive calls during scroll
    */
   const setWidth = debounce(() => {
-    let parentStyle = window.getComputedStyle(nav.parentNode, null)
-    let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
-    let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
-    let width = extractInt(parentStyle.getPropertyValue('width'))
-    nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
+    if (isSticky) {
+      let parentStyle = window.getComputedStyle(nav.parentNode, null)
+      let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
+      let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
+      let width = extractInt(parentStyle.getPropertyValue('width'))
+      nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
+    } else {
+      // Reset
+      nav.style.maxWidth = null
+    }
   }, 250)
 
   /**
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    let shouldBeSticky = false
     if (
       (!settings.mediaQuery || matchMedia(settings.mediaQuery).matches)
       && scrollingElement.scrollTop >= pos) {
-      shouldBeSticky = true
+      isSticky = true
+    } else {
+      isSticky = false
     }
-    if (shouldBeSticky) {
+    if (isSticky) {
       nav.style.position = 'fixed'
       nav.style.top = extractInt(settings.distanceTop) + 'px'
     } else {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
     }
+    // Recalculate width
     setWidth()
   }
 
