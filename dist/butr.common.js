@@ -705,6 +705,7 @@ var to = exports.to = function to(options) {
   var useAnimations = function useAnimations() {
     start = getCurrentPosition();
     end = getTargetPosition();
+    if (end === start) return;
     animate({
       duration: calcDuration(end - start),
       loop: function loop(calcIncrement) {
