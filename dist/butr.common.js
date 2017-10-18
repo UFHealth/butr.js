@@ -244,7 +244,14 @@ var animate = function animate(options) {
  *
  * Animate all anchors that use the data-butr attribute.
  */
-var autoAnchors = exports.autoAnchors = function autoAnchors() {
+var autoAnchors = exports.autoAnchors = function autoAnchors(options) {
+  // Set defaults
+  var defaults = {
+    to: {}
+
+    // Determine settings based on defaults + user provided options
+  };var settings = (0, _objectAssign2.default)({}, defaults, options);
+
   var links = document.body.querySelectorAll('a[data-butr]');
   // Exit before for loop if there are no anchors on the page
   if (!links.length) return false;
@@ -252,7 +259,7 @@ var autoAnchors = exports.autoAnchors = function autoAnchors() {
   for (var i = 0; i < links.length; i++) {
     links[i].addEventListener('click', function (e) {
       e.preventDefault();
-      to({ target: e.target.getAttribute('href') });
+      to((0, _objectAssign2.default)(settings.to, { target: e.currentTarget.getAttribute('href') }));
     });
   }
 };
@@ -269,7 +276,8 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   var defaults = {
     olClass: '',
     liClass: '',
-    aClass: ''
+    aClass: '',
+    prepend: false
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -289,7 +297,17 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    * @return {string} Slugified text for use as an ID attribute.
    */
   var generateId = function generateId(text) {
-    return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+    // Generate ID from text
+    var generated = text.toLowerCase().replace(/\s+/g, '-').replace(/(\d)\./g, '$1-').replace(/[^\w\-]+/g, '').replace(/\-\-+/g, '-').replace(/^-+/, '').replace(/-+$/, '');
+
+    // Guarantee a unique ID
+    var id = generated;
+    var i = 0;
+    while (document.getElementById(id)) {
+      id = generated + '-' + ++i;
+    }
+
+    return id;
   };
 
   /**
@@ -308,7 +326,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    */
   var getRequiredElements = function getRequiredElements() {
     nav = document.querySelector('.js-butr-nav');
-    content = document.querySelector('.js-butr-container');
+    content = document.querySelector('.js-butr-content');
     headings = content.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
@@ -321,7 +339,8 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     if (!nav || !content || !headings) {
       console.error('Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker');
       return false;
-    } else return true;
+    }
+    return true;
   };
 
   /**
@@ -418,28 +437,37 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   };
 
   /**
-   * Create nav list (ol) with tree data and append to parent element.
+   * Create nav list (ol) with tree data.
    *
-   * @param {array} tree   Hierarchical tree of headings.
-   * @param {Node}  parent Container node to append to.
+   * @param  {array} tree   Hierarchical tree of headings.
+   * @param  {Node}  parent Container node to append to.
+   * @return {Node} The list tree.
    */
-  var createNavList = function createNavList(tree, parent) {
+  var createNavList = function createNavList(tree) {
     var list = document.createElement('ol');
     if (settings.olClass) appendClasses(list, settings.olClass);
     for (var i = 0; i < tree.length; i++) {
       var item = tree[i];
       var li = createNavItem(item);
-      if (item.children.length) createNavList(item.children, li);
+      if (item.children.length) {
+        li.appendChild(createNavList(item.children));
+      }
       list.appendChild(li);
     }
-    parent.appendChild(list);
+
+    return list;
   };
 
   var init = function init() {
     getRequiredElements();
     if (checkRequiredElements()) {
       createTree();
-      createNavList(tree, nav);
+      var list = createNavList(tree);
+      if (settings.prepend) {
+        nav.insertBefore(list, nav.firstElementChild);
+      } else {
+        nav.appendChild(list);
+      }
     }
   };
 
@@ -486,7 +514,7 @@ var marker = exports.marker = function marker(options) {
     scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
-    content = document.querySelector('.js-butr-container');
+    content = document.querySelector('.js-butr-content');
     headings = content.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
@@ -496,10 +524,11 @@ var marker = exports.marker = function marker(options) {
    * @return {boolean} Tru only if required elements exist.
    */
   var checkRequiredElements = function checkRequiredElements() {
-    if (!nav || !links) {
+    if (!nav || !links || !content) {
       console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker');
       return false;
-    } else return true;
+    }
+    return true;
   };
 
   /**
@@ -564,13 +593,17 @@ var marker = exports.marker = function marker(options) {
   var setActive = function setActive(hash) {
     var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');
     var currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]');
-    if (currentlyActive !== previouslyActive) {
-      if (previouslyActive) previouslyActive.classList.remove('js-butr-active');
-      if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass);
+    if (currentlyActive === previouslyActive) return;
+
+    if (previouslyActive) {
+      previouslyActive.classList.remove('js-butr-active');
+      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass);
+    }
+    if (currentlyActive) {
       currentlyActive.classList.add('js-butr-active');
       if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass);
+      setMarkerPosition(currentlyActive);
     }
-    setMarkerPosition(currentlyActive);
   };
 
   /**
@@ -621,6 +654,7 @@ var to = exports.to = function to(options) {
     scrollingElement: false,
     target: 0,
     direction: 'y',
+    speed: 1,
     keepHash: true,
     callback: null
 
@@ -696,7 +730,7 @@ var to = exports.to = function to(options) {
    * @return {int} duration (in ms)
    */
   var calcDuration = function calcDuration(distance) {
-    var coefficient = 24;
+    var coefficient = 24 * (1 / settings.speed);
     return coefficient * Math.sqrt(Math.abs(distance));
   };
 
@@ -748,7 +782,8 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
 
   // Set defaults
   var defaults = {
-    distanceTop: 0
+    distanceTop: 0,
+    mediaQuery: false
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -756,6 +791,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
   var pos = 0;
   var scrollingElement = document.scrollingElement || document.documentElement;
   var nav = document.querySelector('.js-butr-nav');
+  var isSticky = false;
 
   /**
    * Set Y position of nav
@@ -783,18 +819,30 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
    * Function is debounced to prevent excessive calls during scroll
    */
   var setWidth = debounce(function () {
-    var parentStyle = window.getComputedStyle(nav.parentNode, null);
-    var paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'));
-    var paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'));
-    var width = extractInt(parentStyle.getPropertyValue('width'));
-    nav.style.maxWidth = width - paddingLeft - paddingRight + 'px';
+    if (isSticky) {
+      var parentStyle = window.getComputedStyle(nav.parentNode, null);
+      var paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'));
+      var paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'));
+      var width = extractInt(parentStyle.getPropertyValue('width'));
+      nav.style.maxWidth = width - paddingLeft - paddingRight + 'px';
+    } else {
+      // Reset
+      nav.style.maxWidth = null;
+    }
   }, 250);
 
   /**
    * Set or remove classes to stick nav based on scroll position
    */
   var determineStickiness = function determineStickiness() {
-    if (scrollingElement.scrollTop >= pos) {
+    if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
+      isSticky = true;
+    } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
+      isSticky = true;
+    } else {
+      isSticky = false;
+    }
+    if (isSticky) {
       nav.style.position = 'fixed';
       nav.style.top = extractInt(settings.distanceTop) + 'px';
     } else {
@@ -811,6 +859,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
     determineStickiness();
     setWidth();
     window.addEventListener('scroll', determineStickiness);
+    window.addEventListener('resize', determineStickiness);
     window.addEventListener('resize', setWidth);
   };
 

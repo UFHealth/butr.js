@@ -1,2 +1,5 @@
 .DS_Store
 node_modules
+
+# Allow the use of local test files when running in dev mode
+test/

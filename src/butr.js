@@ -136,7 +136,15 @@ const animate = options => {
  *
  * Animate all anchors that use the data-butr attribute.
  */
-export const autoAnchors = () => {
+export const autoAnchors = options => {
+  // Set defaults
+  const defaults = {
+    to: {}
+  }
+
+  // Determine settings based on defaults + user provided options
+  let settings = objAssign({}, defaults, options)
+
   let links = document.body.querySelectorAll('a[data-butr]')
   // Exit before for loop if there are no anchors on the page
   if (!links.length) return false
@@ -144,7 +152,7 @@ export const autoAnchors = () => {
   for (let i = 0; i < links.length; i++) {
     links[i].addEventListener('click', e => {
       e.preventDefault()
-      to({ target: e.target.getAttribute('href') })
+      to(objAssign(settings.to, { target: e.currentTarget.getAttribute('href') }))
     })
   }
 }
@@ -162,6 +170,7 @@ export const autoSidebar = options => {
     olClass: '',
     liClass: '',
     aClass: '',
+    prepend: false
   }
 
   // Determine settings based on defaults + user provided options
@@ -182,12 +191,23 @@ export const autoSidebar = options => {
    * @return {string} Slugified text for use as an ID attribute.
    */
   const generateId = text => {
-    return text.toLowerCase()
+    // Generate ID from text
+    let generated = text.toLowerCase()
       .replace(/\s+/g, '-')
+      .replace(/(\d)\./g, '$1-')
       .replace(/[^\w\-]+/g, '')
       .replace(/\-\-+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
+
+    // Guarantee a unique ID
+    let id = generated
+    let i = 0
+    while (document.getElementById(id)) {
+      id = generated + '-' + ++i
+    }
+
+    return id
   }
 
   /**
@@ -206,7 +226,7 @@ export const autoSidebar = options => {
    */
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
-    content = document.querySelector('.js-butr-container')
+    content = document.querySelector('.js-butr-content')
     headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
@@ -219,7 +239,8 @@ export const autoSidebar = options => {
     if (!nav || !content || !headings) {
       console.error('Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker')
       return false
-    } else return true
+    }
+    return true
   }
 
   /**
@@ -318,28 +339,37 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create nav list (ol) with tree data and append to parent element.
+   * Create nav list (ol) with tree data.
    *
-   * @param {array} tree   Hierarchical tree of headings.
-   * @param {Node}  parent Container node to append to.
+   * @param  {array} tree   Hierarchical tree of headings.
+   * @param  {Node}  parent Container node to append to.
+   * @return {Node} The list tree.
    */
-  const createNavList = (tree, parent) => {
+  const createNavList = (tree) => {
     let list = document.createElement('ol')
     if (settings.olClass) appendClasses(list, settings.olClass)
     for (let i = 0; i < tree.length; i++) {
       let item = tree[i]
       let li = createNavItem(item)
-      if (item.children.length) createNavList(item.children, li)
+      if (item.children.length) {
+        li.appendChild(createNavList(item.children))
+      }
       list.appendChild(li)
     }
-    parent.appendChild(list)
+
+    return list
   }
 
   const init = () => {
     getRequiredElements()
     if (checkRequiredElements()) {
       createTree()
-      createNavList(tree, nav)
+      let list = createNavList(tree)
+      if (settings.prepend) {
+        nav.insertBefore(list, nav.firstElementChild)
+      } else {
+        nav.appendChild(list)
+      }
     }
   }
 
@@ -389,7 +419,7 @@ export const marker = options => {
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    content = document.querySelector('.js-butr-container')
+    content = document.querySelector('.js-butr-content')
     headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
@@ -399,10 +429,11 @@ export const marker = options => {
    * @return {boolean} Tru only if required elements exist.
    */
   const checkRequiredElements = () => {
-    if (!nav || !links) {
+    if (!nav || !links || !content) {
       console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker')
       return false
-    } else return true
+    }
+    return true
   }
 
   /**
@@ -465,13 +496,17 @@ export const marker = options => {
   const setActive = hash => {
     let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
     let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
-    if (currentlyActive !== previouslyActive) {
-      if (previouslyActive) previouslyActive.classList.remove('js-butr-active')
-      if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
+    if (currentlyActive === previouslyActive) return
+
+    if (previouslyActive) {
+      previouslyActive.classList.remove('js-butr-active')
+      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
+    }
+    if (currentlyActive) {
       currentlyActive.classList.add('js-butr-active')
       if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass)
+      setMarkerPosition(currentlyActive)
     }
-    setMarkerPosition(currentlyActive)
   }
 
   /**
@@ -522,6 +557,7 @@ export const to = options => {
     scrollingElement: false,
     target: 0,
     direction: 'y',
+    speed: 1,
     keepHash: true,
     callback: null
   }
@@ -600,7 +636,7 @@ export const to = options => {
    * @return {int} duration (in ms)
    */
   const calcDuration = distance => {
-    let coefficient = 24
+    let coefficient = 24 * (1 / settings.speed)
     return coefficient * Math.sqrt(Math.abs(distance))
   }
 
@@ -652,7 +688,8 @@ export const stickyNav = options => {
 
   // Set defaults
   const defaults = {
-    distanceTop: 0
+    distanceTop: 0,
+    mediaQuery: false
   }
 
   // Determine settings based on defaults + user provided options
@@ -661,6 +698,7 @@ export const stickyNav = options => {
   let pos = 0
   let scrollingElement = (document.scrollingElement || document.documentElement)
   let nav = document.querySelector('.js-butr-nav')
+  let isSticky = false
 
   /**
    * Set Y position of nav
@@ -688,18 +726,30 @@ export const stickyNav = options => {
    * Function is debounced to prevent excessive calls during scroll
    */
   const setWidth = debounce(() => {
-    let parentStyle = window.getComputedStyle(nav.parentNode, null)
-    let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
-    let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
-    let width = extractInt(parentStyle.getPropertyValue('width'))
-    nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
+    if (isSticky) {
+      let parentStyle = window.getComputedStyle(nav.parentNode, null)
+      let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
+      let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
+      let width = extractInt(parentStyle.getPropertyValue('width'))
+      nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
+    } else {
+      // Reset
+      nav.style.maxWidth = null
+    }
   }, 250)
 
   /**
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    if (scrollingElement.scrollTop >= pos) {
+    if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
+      isSticky = true
+    } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
+      isSticky = true
+    } else {
+      isSticky = false
+    }
+    if (isSticky) {
       nav.style.position = 'fixed'
       nav.style.top = extractInt(settings.distanceTop) + 'px'
     } else {
@@ -716,6 +766,7 @@ export const stickyNav = options => {
     determineStickiness()
     setWidth()
     window.addEventListener('scroll', determineStickiness)
+    window.addEventListener('resize', determineStickiness)
     window.addEventListener('resize', setWidth)
   }
 
