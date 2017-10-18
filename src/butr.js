@@ -742,9 +742,9 @@ export const stickyNav = options => {
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    if (
-      (!settings.mediaQuery || matchMedia(settings.mediaQuery).matches)
-      && scrollingElement.scrollTop >= pos) {
+    if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
+      isSticky = true
+    } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
       isSticky = true
     } else {
       isSticky = false
