@@ -262,7 +262,8 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
   // Set defaults
   var defaults = {
     olClass: '',
-    liClass: ''
+    liClass: '',
+    aClass: ''
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -403,6 +404,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     a.href = heading.hash;
     a.innerText = heading.label;
     a.classList.add('js-butr-link');
+    if (settings.aClass) appendClasses(a, settings.aClass);
     if (settings.liClass) appendClasses(li, settings.liClass);
     li.appendChild(a);
     return li;
@@ -465,6 +467,7 @@ var marker = exports.marker = function marker(options) {
   var marker = void 0;
   var scrollingElement = void 0;
   var links = void 0;
+  var content = void 0;
   var headings = void 0;
   var nav = void 0;
   var safeToUpdate = true;
@@ -478,7 +481,8 @@ var marker = exports.marker = function marker(options) {
     scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
-    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6');
+    content = document.querySelector('.js-butr-container');
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
   /**
