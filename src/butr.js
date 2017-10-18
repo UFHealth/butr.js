@@ -675,7 +675,8 @@ export const stickyNav = options => {
 
   // Set defaults
   const defaults = {
-    distanceTop: 0
+    distanceTop: 0,
+    mediaQuery: false
   }
 
   // Determine settings based on defaults + user provided options
@@ -722,13 +723,20 @@ export const stickyNav = options => {
    * Set or remove classes to stick nav based on scroll position
    */
   const determineStickiness = () => {
-    if (scrollingElement.scrollTop >= pos) {
+    let shouldBeSticky = false
+    if (
+      (!settings.mediaQuery || matchMedia(settings.mediaQuery).matches)
+      && scrollingElement.scrollTop >= pos) {
+      shouldBeSticky = true
+    }
+    if (shouldBeSticky) {
       nav.style.position = 'fixed'
       nav.style.top = extractInt(settings.distanceTop) + 'px'
     } else {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
     }
+    setWidth()
   }
 
   /**
@@ -737,9 +745,8 @@ export const stickyNav = options => {
   const init = () => {
     determineYPos()
     determineStickiness()
-    setWidth()
     window.addEventListener('scroll', determineStickiness)
-    window.addEventListener('resize', setWidth)
+    window.addEventListener('resize', determineStickiness)
   }
 
   init()
