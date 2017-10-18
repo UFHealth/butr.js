@@ -162,6 +162,7 @@ export const autoSidebar = options => {
     olClass: '',
     liClass: '',
     aClass: '',
+    prepend: false
   }
 
   // Determine settings based on defaults + user provided options
@@ -318,28 +319,37 @@ export const autoSidebar = options => {
   }
 
   /**
-   * Create nav list (ol) with tree data and append to parent element.
+   * Create nav list (ol) with tree data.
    *
-   * @param {array} tree   Hierarchical tree of headings.
-   * @param {Node}  parent Container node to append to.
+   * @param  {array} tree   Hierarchical tree of headings.
+   * @param  {Node}  parent Container node to append to.
+   * @return {Node} The list tree.
    */
-  const createNavList = (tree, parent) => {
+  const createNavList = (tree) => {
     let list = document.createElement('ol')
     if (settings.olClass) appendClasses(list, settings.olClass)
     for (let i = 0; i < tree.length; i++) {
       let item = tree[i]
       let li = createNavItem(item)
-      if (item.children.length) createNavList(item.children, li)
+      if (item.children.length) {
+        li.appendChild(createNavList(item.children))
+      }
       list.appendChild(li)
     }
-    parent.appendChild(list)
+
+    return list
   }
 
   const init = () => {
     getRequiredElements()
     if (checkRequiredElements()) {
       createTree()
-      createNavList(tree, nav)
+      let list = createNavList(tree)
+      if (settings.prepend) {
+        nav.insertBefore(list, nav.firstElementChild)
+      } else {
+        nav.appendChild(list)
+      }
     }
   }
 
