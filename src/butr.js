@@ -366,6 +366,7 @@ export const marker = options => {
   let marker
   let scrollingElement
   let links
+  let content
   let headings
   let nav
   let safeToUpdate = true
@@ -381,7 +382,8 @@ export const marker = options => {
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6')
+    content = document.querySelector('.js-butr-container')
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
   /**

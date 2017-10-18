@@ -465,6 +465,7 @@ var marker = exports.marker = function marker(options) {
   var marker = void 0;
   var scrollingElement = void 0;
   var links = void 0;
+  var content = void 0;
   var headings = void 0;
   var nav = void 0;
   var safeToUpdate = true;
@@ -478,7 +479,8 @@ var marker = exports.marker = function marker(options) {
     scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
-    headings = scrollingElement.querySelectorAll('h2, h3, h4, h5, h6');
+    content = document.querySelector('.js-butr-container');
+    headings = content.querySelectorAll('h2, h3, h4, h5, h6');
   };
 
   /**
