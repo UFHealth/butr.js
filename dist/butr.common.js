@@ -804,7 +804,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
   var determineStickiness = function determineStickiness() {
     if (scrollingElement.scrollTop >= pos) {
       nav.style.position = 'fixed';
-      nav.style.top = settings.distanceTop;
+      nav.style.top = extractInt(settings.distanceTop) + 'px';
     } else {
       nav.style.position = 'relative';
       nav.style.top = 'auto';
