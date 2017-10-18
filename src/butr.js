@@ -226,7 +226,7 @@ export const autoSidebar = options => {
    */
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
-    content = document.querySelector('.js-butr-container')
+    content = document.querySelector('.js-butr-content')
     headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
@@ -239,7 +239,8 @@ export const autoSidebar = options => {
     if (!nav || !content || !headings) {
       console.error('Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker')
       return false
-    } else return true
+    }
+    return true
   }
 
   /**
@@ -418,7 +419,7 @@ export const marker = options => {
       : document.scrollingElement || document.documentElement
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
-    content = document.querySelector('.js-butr-container')
+    content = document.querySelector('.js-butr-content')
     headings = content.querySelectorAll('h2, h3, h4, h5, h6')
   }
 
@@ -428,10 +429,11 @@ export const marker = options => {
    * @return {boolean} Tru only if required elements exist.
    */
   const checkRequiredElements = () => {
-    if (!nav || !links) {
+    if (!nav || !links || !content) {
       console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker')
       return false
-    } else return true
+    }
+    return true
   }
 
   /**
