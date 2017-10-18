@@ -104,6 +104,17 @@ var debounce = function debounce(callback, delay) {
 };
 
 /**
+ * Append Class to HTML Element
+ * @param  {object} el
+ * @param  {string} classes
+ */
+var appendClasses = function appendClasses(el, classes) {
+  var classStr = el.className + (' ' + classes);
+  // Remove whitespace at beginning an end (if there is any) to keep it clean
+  el.className = classStr.trim();
+};
+
+/**
  * Animation function - accepts duration, callback for animation loop (each
  * frame), callback when animation is complete, and option for easing function.
  *
@@ -392,7 +403,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
     a.href = heading.hash;
     a.innerText = heading.label;
     a.classList.add('js-butr-link');
-    if (settings.liClass) li.classList.add(settings.liClass);
+    if (settings.liClass) appendClasses(li, settings.liClass);
     li.appendChild(a);
     return li;
   };
@@ -405,7 +416,7 @@ var autoSidebar = exports.autoSidebar = function autoSidebar(options) {
    */
   var createNavList = function createNavList(tree, parent) {
     var list = document.createElement('ol');
-    if (settings.olClass) list.classList.add(settings.olClass);
+    if (settings.olClass) appendClasses(list, settings.olClass);
     for (var i = 0; i < tree.length; i++) {
       var item = tree[i];
       var li = createNavItem(item);
@@ -488,7 +499,7 @@ var marker = exports.marker = function marker(options) {
   var createMarker = function createMarker() {
     marker = document.createElement('div');
     marker.classList.add('js-butr-marker');
-    if (settings.markerClass) marker.classList.add(settings.markerClass);
+    if (settings.markerClass) appendClasses(marker, settings.markerClass);
     marker.style.height = links[0].offsetHeight + 'px';
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
@@ -565,7 +576,7 @@ var marker = exports.marker = function marker(options) {
       if (previouslyActive) previouslyActive.classList.remove('js-butr-active');
       if (previouslyActive && settings.activeClass) previouslyActive.classList.remove(settings.activeClass);
       currentlyActive.classList.add('js-butr-active');
-      if (settings.activeClass) currentlyActive.classList.add(settings.activeClass);
+      if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass);
     }
     setMarkerPosition(currentlyActive);
   };
