@@ -4,6 +4,24 @@ import objAssign from 'object-assign'
 let animating = false
 
 /**
+ * Super basic throttle - just like sitepoint's throttle
+ * https://www.sitepoint.com/throttle-scroll-events/
+ *
+ * @param  {Function} callback
+ * @param  {[type]}   delay
+ * @return {Function} throttled callback
+ */
+const throttle = (callback, delay) => {
+  let time = performance.now()
+  return () => {
+    if ((time + delay - performance.now()) < 0) {
+      callback()
+      time = performance.now()
+    }
+  }
+}
+
+/**
  * Basic debounce
  * More info: https://davidwalsh.name/function-debounce
  *
@@ -520,13 +538,12 @@ export const marker = options => {
   /**
    * Call for scrolling event
    *
-   * Use debounce to only fire once every 50ms and not every pixel
-   * https://davidwalsh.name/javascript-debounce-function
+   * Throttled to prevent excessive calls
    */
-  const contentScrolled = debounce(() => {
+  const contentScrolled = throttle(() => {
     // If it's animating don't try to update active nav
     if (!animating) updateNav()
-  }, 50)
+  }, 33)
 
   const init = () => {
     getRequiredElements()
@@ -740,8 +757,10 @@ export const stickyNav = options => {
 
   /**
    * Set or remove classes to stick nav based on scroll position
+   *
+   * Throttled to prevent excessive calls
    */
-  const determineStickiness = () => {
+  const determineStickiness = throttle(() => {
     if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
       isSticky = true
     } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
@@ -756,7 +775,7 @@ export const stickyNav = options => {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
     }
-  }
+  }, 33)
 
   /**
    * Start up sticky nav

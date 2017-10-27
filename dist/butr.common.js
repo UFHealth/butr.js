@@ -86,6 +86,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var animating = false;
 
 /**
+ * Super basic throttle - just like sitepoint's throttle
+ * https://www.sitepoint.com/throttle-scroll-events/
+ *
+ * @param  {Function} callback
+ * @param  {[type]}   delay
+ * @return {Function} throttled callback
+ */
+var throttle = function throttle(callback, delay) {
+  var time = performance.now();
+  return function () {
+    if (time + delay - performance.now() < 0) {
+      callback();
+      time = performance.now();
+    }
+  };
+};
+
+/**
  * Basic debounce
  * More info: https://davidwalsh.name/function-debounce
  *
@@ -614,16 +632,18 @@ var marker = exports.marker = function marker(options) {
     checkActive();
   };
 
+  var count = 0;
+
   /**
    * Call for scrolling event
    *
-   * Use debounce to only fire once every 50ms and not every pixel
-   * https://davidwalsh.name/javascript-debounce-function
+   * Throttled to prevent excessive calls
    */
-  var contentScrolled = debounce(function () {
+  var contentScrolled = throttle(function () {
+    console.log('running');
     // If it's animating don't try to update active nav
     if (!animating) updateNav();
-  }, 50);
+  }, 33);
 
   var init = function init() {
     getRequiredElements();
@@ -833,8 +853,11 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
 
   /**
    * Set or remove classes to stick nav based on scroll position
+   *
+   * Throttled to prevent excessive calls
    */
-  var determineStickiness = function determineStickiness() {
+  var determineStickiness = throttle(function () {
+    console.log('ds');
     if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
       isSticky = true;
     } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
@@ -849,7 +872,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
       nav.style.position = 'relative';
       nav.style.top = 'auto';
     }
-  };
+  }, 33);
 
   /**
    * Start up sticky nav
