@@ -632,15 +632,12 @@ var marker = exports.marker = function marker(options) {
     checkActive();
   };
 
-  var count = 0;
-
   /**
    * Call for scrolling event
    *
    * Throttled to prevent excessive calls
    */
   var contentScrolled = throttle(function () {
-    console.log('running');
     // If it's animating don't try to update active nav
     if (!animating) updateNav();
   }, 33);
@@ -857,7 +854,6 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
    * Throttled to prevent excessive calls
    */
   var determineStickiness = throttle(function () {
-    console.log('ds');
     if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
       isSticky = true;
     } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
