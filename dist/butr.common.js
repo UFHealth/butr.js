@@ -507,7 +507,8 @@ var marker = exports.marker = function marker(options) {
     duration: 400,
     callback: false,
     markerClass: '',
-    activeClass: ''
+    activeClass: '',
+    threshold: 0
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -533,7 +534,11 @@ var marker = exports.marker = function marker(options) {
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
     content = document.querySelector('.js-butr-content');
-    headings = content.querySelectorAll('h2, h3, h4, h5, h6');
+    // Only collect headings that are in the sidebar
+    headings = [];
+    for (var i = links.length - 1; i >= 0; i--) {
+      headings.unshift(content.querySelector(links[i].getAttribute('href')));
+    }
   };
 
   /**
@@ -595,7 +600,8 @@ var marker = exports.marker = function marker(options) {
   var checkActive = function checkActive() {
     var heading = void 0;
     for (var i = 0; i < headings.length; i++) {
-      if (headings[i].offsetTop > top) {
+      var rect = headings[i].getBoundingClientRect();
+      if (rect.top + top - settings.threshold > top) {
         if (!heading) heading = headings[i];
         break;
       } else heading = headings[i];
@@ -673,7 +679,8 @@ var to = exports.to = function to(options) {
     direction: 'y',
     speed: 1,
     keepHash: true,
-    callback: null
+    callback: null,
+    threshold: 0
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -712,8 +719,10 @@ var to = exports.to = function to(options) {
   var getTargetPosition = function getTargetPosition() {
     if (settings.target[0] === '#') {
       var targetEl = document.getElementById(settings.target.substr(1));
+      var rect = targetEl.getBoundingClientRect();
+      var top = scrollingElement.scrollTop;
       if (targetEl && settings.direction === 'x') return targetEl.offsetLeft;
-      if (targetEl && settings.direction === 'y') return targetEl.offsetTop;
+      if (targetEl && settings.direction === 'y') return rect.top + top - settings.threshold;
       return 0;
     }
     return settings.target;
@@ -817,7 +826,8 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
    * isn't pinned to the very top (allows user definable breathing room)
    */
   var determineYPos = function determineYPos() {
-    pos = nav.offsetTop - extractInt(settings.distanceTop);
+    var rect = nav.getBoundingClientRect();
+    pos = rect.top + scrollingElement.scrollTop - extractInt(settings.distanceTop);
   };
 
   /**

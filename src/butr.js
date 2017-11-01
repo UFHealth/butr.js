@@ -410,6 +410,7 @@ export const marker = options => {
     callback: false,
     markerClass: '',
     activeClass: '',
+    threshold: 0
   }
 
   // Determine settings based on defaults + user provided options
@@ -438,7 +439,11 @@ export const marker = options => {
     nav = document.querySelector('.js-butr-nav')
     links = document.querySelectorAll('.js-butr-link')
     content = document.querySelector('.js-butr-content')
-    headings = content.querySelectorAll('h2, h3, h4, h5, h6')
+    // Only collect headings that are in the sidebar
+    headings = []
+    for (var i = links.length - 1; i >= 0; i--) {
+      headings.unshift(content.querySelector(links[i].getAttribute('href')))
+    }
   }
 
   /**
@@ -498,7 +503,8 @@ export const marker = options => {
   const checkActive = () => {
     let heading
     for (let i = 0; i < headings.length; i++) {
-      if (headings[i].offsetTop > top) {
+      let rect = headings[i].getBoundingClientRect()
+      if (((rect.top + top) - settings.threshold) > top) {
         if (!heading) heading = headings[i]
         break
       } else heading = headings[i]
@@ -576,7 +582,8 @@ export const to = options => {
     direction: 'y',
     speed: 1,
     keepHash: true,
-    callback: null
+    callback: null,
+    threshold: 0
   }
 
   // Determine settings based on defaults + user provided options
@@ -618,8 +625,10 @@ export const to = options => {
   const getTargetPosition = () => {
     if (settings.target[0] === '#') {
       let targetEl = document.getElementById(settings.target.substr(1))
+      let rect = targetEl.getBoundingClientRect()
+      let top = scrollingElement.scrollTop
       if (targetEl && settings.direction === 'x') return targetEl.offsetLeft
-      if (targetEl && settings.direction === 'y') return targetEl.offsetTop
+      if (targetEl && settings.direction === 'y') return rect.top + top - settings.threshold
       return 0
     }
     return settings.target
@@ -724,7 +733,10 @@ export const stickyNav = options => {
    * isn't pinned to the very top (allows user definable breathing room)
    */
   const determineYPos = () => {
-    pos = nav.offsetTop - extractInt(settings.distanceTop)
+    let rect = nav.getBoundingClientRect()
+    pos = rect.top
+      + scrollingElement.scrollTop
+      - extractInt(settings.distanceTop)
   }
 
   /**
