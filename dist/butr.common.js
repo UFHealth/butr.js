@@ -82,8 +82,11 @@ var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Track when animating to prevent excessive calls
+// Track when animating to prevent excessive calls and allow canceling of
+// started animation
 var animating = false;
+var stopAnimating = false;
+var count = 0;
 
 /**
  * Super basic throttle - just like sitepoint's throttle
@@ -94,12 +97,15 @@ var animating = false;
  * @return {Function} throttled callback
  */
 var throttle = function throttle(callback, delay) {
+  var timeout = null;
   var time = performance.now();
   return function () {
     if (time + delay - performance.now() < 0) {
       callback();
       time = performance.now();
     }
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(callback, delay);
   };
 };
 
@@ -142,6 +148,7 @@ var appendClasses = function appendClasses(el, classes) {
  * @param {object} options
  */
 var animate = function animate(options) {
+  count++;
   var defaults = {
     duration: 800,
     loop: null,
@@ -173,11 +180,13 @@ var animate = function animate(options) {
    * again, otherwise use done callback, if provided
    */
   var frame = function frame() {
+    console.log('frame', count);
     now = performance.now();
     settings.loop(calcIncrement);
-    if (now < end) requestAnimationFrame(frame);else {
+    if (now < end && !stopAnimating) requestAnimationFrame(frame);else {
       // Animation is done
       animating = false;
+      stopAnimating = false;
       if (typeof settings.done === 'function') settings.done();
     }
   };
@@ -720,9 +729,14 @@ var to = exports.to = function to(options) {
     if (settings.target[0] === '#') {
       var targetEl = document.getElementById(settings.target.substr(1));
       var rect = targetEl.getBoundingClientRect();
-      var top = scrollingElement.scrollTop;
-      if (targetEl && settings.direction === 'x') return targetEl.offsetLeft;
-      if (targetEl && settings.direction === 'y') return rect.top + top - settings.threshold;
+      if (targetEl && settings.direction === 'x') {
+        var left = scrollingElement.scrollLeft;
+        return Math.max(rect.left + left - settings.threshold, 0);
+      }
+      if (targetEl && settings.direction === 'y') {
+        var top = scrollingElement.scrollTop;
+        return Math.max(rect.top + top - settings.threshold, 0);
+      }
       return 0;
     }
     return settings.target;
@@ -768,6 +782,11 @@ var to = exports.to = function to(options) {
     end = getTargetPosition();
     // Don't scroll nowhere if ya don needa chile'
     if (end === start) return;
+    if (animating) {
+      console.log('canceled', count);
+      stopAnimating = true;
+    }
+    console.log('new animation', count);
     animate({
       duration: calcDuration(end - start),
       loop: function loop(calcIncrement) {

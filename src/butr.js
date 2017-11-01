@@ -12,12 +12,15 @@ let animating = false
  * @return {Function} throttled callback
  */
 const throttle = (callback, delay) => {
+  let timeout = null
   let time = performance.now()
   return () => {
     if ((time + delay - performance.now()) < 0) {
       callback()
       time = performance.now()
     }
+    if (timeout) clearTimeout(timeout)
+    timeout = setTimeout(callback, delay)
   }
 }
 
@@ -626,9 +629,14 @@ export const to = options => {
     if (settings.target[0] === '#') {
       let targetEl = document.getElementById(settings.target.substr(1))
       let rect = targetEl.getBoundingClientRect()
-      let top = scrollingElement.scrollTop
-      if (targetEl && settings.direction === 'x') return targetEl.offsetLeft
-      if (targetEl && settings.direction === 'y') return rect.top + top - settings.threshold
+      if (targetEl && settings.direction === 'x') {
+        let left = scrollingElement.scrollLeft
+        return Math.max(rect.left + left - settings.threshold, 0)
+      }
+      if (targetEl && settings.direction === 'y') {
+        let top = scrollingElement.scrollTop
+        return Math.max(rect.top + top - settings.threshold, 0)
+      }
       return 0
     }
     return settings.target
