@@ -1,6 +1,6 @@
 ![Butr Logo](logo.png)
 
-Butr is a tiny (3kb~) JavaScript package that can:
+Butr is a tiny (4kb~) JavaScript package that can:
 
 - Collect all headings and create a table of contents with links
 - Update the table of contents to indicate which link is currently in view
