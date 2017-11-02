@@ -9,8 +9,8 @@
   "license": "MIT",
   "repository": "github:ufhealth/butr",
   "main": "dist/butr.common.js",
+  "module": "dist/butr.common.js",
   "jsnext:main": "src/butr.js",
-  "module": "src/butr.js",
   "files": [
     "src",
     "dist/*.js"
