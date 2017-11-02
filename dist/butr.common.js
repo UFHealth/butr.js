@@ -82,11 +82,8 @@ var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Track when animating to prevent excessive calls and allow canceling of
-// started animation
+// Track when animating to prevent excessive calls
 var animating = false;
-var stopAnimating = false;
-var count = 0;
 
 /**
  * Super basic throttle - just like sitepoint's throttle
@@ -148,7 +145,6 @@ var appendClasses = function appendClasses(el, classes) {
  * @param {object} options
  */
 var animate = function animate(options) {
-  count++;
   var defaults = {
     duration: 800,
     loop: null,
@@ -180,13 +176,11 @@ var animate = function animate(options) {
    * again, otherwise use done callback, if provided
    */
   var frame = function frame() {
-    console.log('frame', count);
     now = performance.now();
     settings.loop(calcIncrement);
-    if (now < end && !stopAnimating) requestAnimationFrame(frame);else {
+    if (now < end) requestAnimationFrame(frame);else {
       // Animation is done
       animating = false;
-      stopAnimating = false;
       if (typeof settings.done === 'function') settings.done();
     }
   };
@@ -782,11 +776,6 @@ var to = exports.to = function to(options) {
     end = getTargetPosition();
     // Don't scroll nowhere if ya don needa chile'
     if (end === start) return;
-    if (animating) {
-      console.log('canceled', count);
-      stopAnimating = true;
-    }
-    console.log('new animation', count);
     animate({
       duration: calcDuration(end - start),
       loop: function loop(calcIncrement) {
