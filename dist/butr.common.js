@@ -82,8 +82,32 @@ var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Track when animating to prevent excessive calls
+// Track when animating to prevent excessive calls and allow canceling of
+// started animation
 var animating = false;
+var stopAnimating = false;
+var count = 0;
+
+/**
+ * Super basic throttle - just like sitepoint's throttle
+ * https://www.sitepoint.com/throttle-scroll-events/
+ *
+ * @param  {Function} callback
+ * @param  {[type]}   delay
+ * @return {Function} throttled callback
+ */
+var throttle = function throttle(callback, delay) {
+  var timeout = null;
+  var time = performance.now();
+  return function () {
+    if (time + delay - performance.now() < 0) {
+      callback();
+      time = performance.now();
+    }
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(callback, delay);
+  };
+};
 
 /**
  * Basic debounce
@@ -124,6 +148,7 @@ var appendClasses = function appendClasses(el, classes) {
  * @param {object} options
  */
 var animate = function animate(options) {
+  count++;
   var defaults = {
     duration: 800,
     loop: null,
@@ -155,11 +180,13 @@ var animate = function animate(options) {
    * again, otherwise use done callback, if provided
    */
   var frame = function frame() {
+    console.log('frame', count);
     now = performance.now();
     settings.loop(calcIncrement);
-    if (now < end) requestAnimationFrame(frame);else {
+    if (now < end && !stopAnimating) requestAnimationFrame(frame);else {
       // Animation is done
       animating = false;
+      stopAnimating = false;
       if (typeof settings.done === 'function') settings.done();
     }
   };
@@ -489,7 +516,8 @@ var marker = exports.marker = function marker(options) {
     duration: 400,
     callback: false,
     markerClass: '',
-    activeClass: ''
+    activeClass: '',
+    threshold: 0
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -515,7 +543,11 @@ var marker = exports.marker = function marker(options) {
     nav = document.querySelector('.js-butr-nav');
     links = document.querySelectorAll('.js-butr-link');
     content = document.querySelector('.js-butr-content');
-    headings = content.querySelectorAll('h2, h3, h4, h5, h6');
+    // Only collect headings that are in the sidebar
+    headings = [];
+    for (var i = links.length - 1; i >= 0; i--) {
+      headings.unshift(content.querySelector(links[i].getAttribute('href')));
+    }
   };
 
   /**
@@ -577,7 +609,8 @@ var marker = exports.marker = function marker(options) {
   var checkActive = function checkActive() {
     var heading = void 0;
     for (var i = 0; i < headings.length; i++) {
-      if (headings[i].offsetTop > top) {
+      var rect = headings[i].getBoundingClientRect();
+      if (rect.top + top - settings.threshold > top) {
         if (!heading) heading = headings[i];
         break;
       } else heading = headings[i];
@@ -617,13 +650,12 @@ var marker = exports.marker = function marker(options) {
   /**
    * Call for scrolling event
    *
-   * Use debounce to only fire once every 50ms and not every pixel
-   * https://davidwalsh.name/javascript-debounce-function
+   * Throttled to prevent excessive calls
    */
-  var contentScrolled = debounce(function () {
+  var contentScrolled = throttle(function () {
     // If it's animating don't try to update active nav
     if (!animating) updateNav();
-  }, 50);
+  }, 33);
 
   var init = function init() {
     getRequiredElements();
@@ -656,7 +688,8 @@ var to = exports.to = function to(options) {
     direction: 'y',
     speed: 1,
     keepHash: true,
-    callback: null
+    callback: null,
+    threshold: 0
 
     // Determine settings based on defaults + user provided options
   };var settings = (0, _objectAssign2.default)({}, defaults, options);
@@ -695,8 +728,15 @@ var to = exports.to = function to(options) {
   var getTargetPosition = function getTargetPosition() {
     if (settings.target[0] === '#') {
       var targetEl = document.getElementById(settings.target.substr(1));
-      if (targetEl && settings.direction === 'x') return targetEl.offsetLeft;
-      if (targetEl && settings.direction === 'y') return targetEl.offsetTop;
+      var rect = targetEl.getBoundingClientRect();
+      if (targetEl && settings.direction === 'x') {
+        var left = scrollingElement.scrollLeft;
+        return Math.max(rect.left + left - settings.threshold, 0);
+      }
+      if (targetEl && settings.direction === 'y') {
+        var top = scrollingElement.scrollTop;
+        return Math.max(rect.top + top - settings.threshold, 0);
+      }
       return 0;
     }
     return settings.target;
@@ -742,6 +782,11 @@ var to = exports.to = function to(options) {
     end = getTargetPosition();
     // Don't scroll nowhere if ya don needa chile'
     if (end === start) return;
+    if (animating) {
+      console.log('canceled', count);
+      stopAnimating = true;
+    }
+    console.log('new animation', count);
     animate({
       duration: calcDuration(end - start),
       loop: function loop(calcIncrement) {
@@ -800,7 +845,8 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
    * isn't pinned to the very top (allows user definable breathing room)
    */
   var determineYPos = function determineYPos() {
-    pos = nav.offsetTop - extractInt(settings.distanceTop);
+    var rect = nav.getBoundingClientRect();
+    pos = rect.top + scrollingElement.scrollTop - extractInt(settings.distanceTop);
   };
 
   /**
@@ -833,8 +879,10 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
 
   /**
    * Set or remove classes to stick nav based on scroll position
+   *
+   * Throttled to prevent excessive calls
    */
-  var determineStickiness = function determineStickiness() {
+  var determineStickiness = throttle(function () {
     if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
       isSticky = true;
     } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
@@ -849,7 +897,7 @@ var stickyNav = exports.stickyNav = function stickyNav(options) {
       nav.style.position = 'relative';
       nav.style.top = 'auto';
     }
-  };
+  }, 33);
 
   /**
    * Start up sticky nav
