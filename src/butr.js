@@ -681,15 +681,18 @@ export const to = options => {
     start = getCurrentPosition()
     end = getTargetPosition()
     // Don't scroll nowhere if ya don needa chile'
-    if (end === start) return
-    animate({
-      duration: calcDuration(end - start),
-      loop (calcIncrement) {
-        let distance = calcIncrement(start, end)
-        scrollTheEl(distance)
-      },
-      done: afterScroll
-    })
+    if (end === start) {
+      afterScroll()
+    } else {
+      animate({
+        duration: calcDuration(end - start),
+        loop (calcIncrement) {
+          let distance = calcIncrement(start, end)
+          scrollTheEl(distance)
+        },
+        done: afterScroll
+      })
+    }
   }
 
   /**
