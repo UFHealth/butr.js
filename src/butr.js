@@ -469,13 +469,15 @@ export const marker = options => {
     marker = document.createElement('div')
     marker.classList.add('js-butr-marker')
     if (settings.markerClass) appendClasses(marker, settings.markerClass)
-    marker.style.height = links[0].offsetHeight + 'px'
+    marker.style.height = `${links[0].offsetHeight}px`
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
+    const easing = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)'
     if (!prefersReducedMotion) {
-      marker.style.transition =
-        settings.duration +
-        'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+      marker.style.transition = [
+        `${settings.duration}ms transform ${easing}`,
+        `${settings.duration}ms height ${easing}`
+      ].join(',')
     }
     nav.appendChild(marker)
   }
@@ -486,7 +488,13 @@ export const marker = options => {
    * @param {Node} activeLink currently active link
    */
   const setMarkerPosition = activeLink => {
-    marker.style.transform = `translateY(${activeLink.offsetTop}px)`
+    let translatePos = activeLink.offsetTop
+    const style = window.getComputedStyle(activeLink)
+    if (style.getPropertyValue('box-sizing') === 'border-box') {
+      translatePos -= Math.round(parseFloat(style.getPropertyValue('border-top-width'), 10))
+    }
+    marker.style.transform = `translateY(${translatePos}px)`
+    marker.style.height = `${activeLink.offsetHeight}px`
   }
 
   /**
