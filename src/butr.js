@@ -506,13 +506,18 @@ export const marker = options => {
   const checkActive = () => {
     let heading
     for (let i = 0; i < headings.length; i++) {
+      if (!headings[i]) {
+        continue
+      }
       let rect = headings[i].getBoundingClientRect()
       if (((rect.top + top) - settings.threshold) > top) {
         if (!heading) heading = headings[i]
         break
       } else heading = headings[i]
     }
-    if (heading) setActive('#' + heading.id)
+    if (heading) {
+      setActive('#' + heading.id)
+    }
   }
 
   /**
