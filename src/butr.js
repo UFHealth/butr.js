@@ -2,6 +2,7 @@ import objAssign from 'object-assign'
 
 // Track when animating to prevent excessive calls
 let animating = false
+let scrollingElement = (document.scrollingElement || document.documentElement)
 
 /**
  * Super basic throttle - just like sitepoint's throttle
@@ -52,6 +53,25 @@ const appendClasses = (el, classes) => {
   let classStr = el.className + (' ' + classes)
   // Remove whitespace at beginning an end (if there is any) to keep it clean
   el.className = classStr.trim()
+}
+
+/**
+ * Helper function to get y position  of element relative to window.
+ *
+ * @param {DOMElement} element
+ * @param {int} offset
+ * @param {bool} getBottom
+*/
+const determineYPos = (element, offset = 0, bottom = false) => {
+  let { top } = element.getBoundingClientRect()
+  if (bottom) {
+    const computedHeight = window.getComputedStyle(element).getPropertyValue('height')
+    const bottomPos = top + parseInt(computedHeight, 10)
+
+    return bottomPos + scrollingElement.scrollTop - offset
+  }
+
+  return top + scrollingElement.scrollTop - offset
 }
 
 /**
@@ -112,7 +132,7 @@ const animate = options => {
    * @param  {Number} endValue
    * @return {Number} increment
    */
-  const calcIncrement = (startValue , endValue) => {
+  const calcIncrement = (startValue, endValue) => {
     let delta = endValue - startValue
     let eased = delta * timingFunctions[settings.easing](elapsed())
     return startValue + eased
@@ -135,18 +155,18 @@ const animate = options => {
    */
   const timingFunctions = {
     linear (t) { return t },
-    easeInQuad (t) { return t*t },
-    easeOutQuad (t) { return t*(2-t) },
-    easeInOutQuad (t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
-    easeInCubic (t) { return t*t*t },
-    easeOutCubic (t) { return (--t)*t*t+1 },
-    easeInOutCubic (t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
-    easeInQuart (t) { return t*t*t*t },
-    easeOutQuart (t) { return 1-(--t)*t*t*t },
-    easeInOutQuart (t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
-    easeInQuint (t) { return t*t*t*t*t },
-    easeOutQuint (t) { return 1+(--t)*t*t*t*t },
-    easeInOutQuint (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
+    easeInQuad (t) { return t * t },
+    easeOutQuad (t) { return t * (2 - t) },
+    easeInOutQuad (t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t },
+    easeInCubic (t) { return t * t * t },
+    easeOutCubic (t) { return (--t) * t * t + 1 },
+    easeInOutCubic (t) { return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1 },
+    easeInQuart (t) { return t * t * t * t },
+    easeOutQuart (t) { return 1 - (--t) * t * t * t },
+    easeInOutQuart (t) { return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t },
+    easeInQuint (t) { return t * t * t * t * t },
+    easeOutQuint (t) { return 1 + (--t) * t * t * t * t },
+    easeInOutQuint (t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t }
   }
 
   startAnimation()
@@ -405,7 +425,6 @@ export const autoSidebar = options => {
  * @param {object} settings
  */
 export const marker = options => {
-
   // Set defaults
   const defaults = {
     scrollingElement: false,
@@ -577,7 +596,6 @@ export const marker = options => {
  * @param {object} options
  */
 export const to = options => {
-
   // Set defaults
   const defaults = {
     scrollingElement: false,
@@ -722,20 +740,24 @@ export const to = options => {
  * visible
  */
 export const stickyNav = options => {
-
   // Set defaults
   const defaults = {
     distanceTop: 0,
-    mediaQuery: false
+    mediaQuery: false,
+    bottomAnchor: '',
+    bottomOffset: 0,
+    timeout: 0
   }
 
   // Determine settings based on defaults + user provided options
   let settings = objAssign({}, defaults, options)
 
   let pos = 0
-  let scrollingElement = (document.scrollingElement || document.documentElement)
+  let bottomPos = 0
+  let bottomElement = document.querySelector(settings.bottomAnchor) || null
   let nav = document.querySelector('.js-butr-nav')
   let isSticky = false
+  let isAtBottom = false
 
   /**
    * Set Y position of nav
@@ -743,12 +765,6 @@ export const stickyNav = options => {
    * Consider distanceTop - which allows user to add some padding so the nav
    * isn't pinned to the very top (allows user definable breathing room)
    */
-  const determineYPos = () => {
-    let rect = nav.getBoundingClientRect()
-    pos = rect.top
-      + scrollingElement.scrollTop
-      - extractInt(settings.distanceTop)
-  }
 
   /**
    * Extract int from string with unit (px, em, etc)
@@ -783,28 +799,62 @@ export const stickyNav = options => {
    *
    * Throttled to prevent excessive calls
    */
-  const determineStickiness = throttle(() => {
-    if (!settings.mediaQuery && scrollingElement.scrollTop >= pos) {
+  const determineStickiness = () => {
+    console.log(settings)
+    if (bottomElement !== null) {
+      bottomPos = determineYPos(bottomElement, settings.bottomOffset, true)
+    }
+
+    const { scrollTop } = scrollingElement
+
+    if (
+      !settings.mediaQuery &&
+      scrollTop >= pos &&
+      (
+        bottomElement === null ||
+        scrollTop <= (bottomPos - nav.offsetHeight - settings.bottomOffset)
+      )
+    ) {
       isSticky = true
-    } else if (matchMedia(settings.mediaQuery).matches && scrollingElement.scrollTop >= pos) {
+      isAtBottom = false
+    } else if (
+      matchMedia(settings.mediaQuery).matches &&
+      scrollTop >= pos &&
+      (
+        bottomElement === null ||
+        scrollTop <= (bottomPos - nav.offsetHeight - settings.bottomOffset)
+      )
+    ) {
       isSticky = true
+      isAtBottom = false
     } else {
       isSticky = false
+
+      if (bottomElement !== null && scrollTop >= (bottomPos - nav.offsetHeight - settings.bottomOffset)) {
+        isAtBottom = true
+      }
     }
-    if (isSticky) {
+
+    if (isSticky && !isAtBottom) {
       nav.style.position = 'fixed'
       nav.style.top = extractInt(settings.distanceTop) + 'px'
+      nav.style.bottom = 'auto'
+    } else if (!isSticky && isAtBottom) {
+      nav.style.position = 'absolute'
+      nav.style.top = 'auto'
+      nav.style.bottom = settings.distanceTop
     } else {
       nav.style.position = 'relative'
       nav.style.top = 'auto'
+      nav.style.bottom = 'auto'
     }
-  }, 33)
+  }
 
   /**
    * Start up sticky nav
    */
   const init = () => {
-    determineYPos()
+    pos = determineYPos(nav, extractInt(settings.distanceTop))
     determineStickiness()
     setWidth()
     window.addEventListener('scroll', determineStickiness)
@@ -812,7 +862,7 @@ export const stickyNav = options => {
     window.addEventListener('resize', setWidth)
   }
 
-  init()
+  setTimeout(() => init(), settings.timeout)
 }
 
 export default {

@@ -1,6 +1,6 @@
 const path = require('path')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const mergeConfig = require('webpack-merge')
+const TerserPlugin = require('terser-webpack-plugin');
 
 // Define separate targets for browser and module usage.
 const targets = {
@@ -10,9 +10,6 @@ const targets = {
       libraryTarget: 'window',
       library: 'butr'
     },
-    plugins: [
-      new UglifyJSPlugin()
-    ]
   },
   'commonjs': {
     output: {
@@ -35,11 +32,15 @@ const baseConfig = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env']
+            presets: ['@babel/preset-env']
           }
         }
       }
     ]
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()]
   }
 }
 
