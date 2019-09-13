@@ -56,7 +56,7 @@ const appendClasses = (el, classes) => {
 }
 
 /**
- * Helper function to get y position  of element relative to window.
+ * Helper function to get y position  of element relative to scrolling element.
  *
  * @param {DOMElement} element
  * @param {int} offset
@@ -65,13 +65,13 @@ const appendClasses = (el, classes) => {
 const determineYPos = (element, offset = 0, bottom = false) => {
   let { top } = element.getBoundingClientRect()
   if (bottom) {
-    const computedHeight = window.getComputedStyle(element).getPropertyValue('height')
+    const computedHeight = element.getBoundingClientRect().height
     const bottomPos = top + parseInt(computedHeight, 10)
 
-    return bottomPos + scrollingElement.scrollTop - offset
+    return Math.round(bottomPos + scrollingElement.scrollTop - offset)
   }
 
-  return top + scrollingElement.scrollTop - offset
+  return Math.round(top + scrollingElement.scrollTop - offset)
 }
 
 /**
@@ -94,7 +94,6 @@ const animate = options => {
   let start
   let end
   let now
-  let timePassed = 0
 
   /**
    * Start animation - get current time, set end time (based on current) and
@@ -800,11 +799,9 @@ export const stickyNav = options => {
    * Throttled to prevent excessive calls
    */
   const determineStickiness = () => {
-    console.log(settings)
     if (bottomElement !== null) {
       bottomPos = determineYPos(bottomElement, settings.bottomOffset, true)
     }
-
     const { scrollTop } = scrollingElement
 
     if (
@@ -862,7 +859,7 @@ export const stickyNav = options => {
     window.addEventListener('resize', setWidth)
   }
 
-  setTimeout(() => init(), settings.timeout)
+  init()
 }
 
 export default {

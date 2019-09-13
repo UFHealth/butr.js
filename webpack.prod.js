@@ -1,6 +1,6 @@
 const path = require('path')
 const mergeConfig = require('webpack-merge')
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin')
 
 // Define separate targets for browser and module usage.
 const targets = {
@@ -21,6 +21,7 @@ const targets = {
 
 const baseConfig = {
   entry: './src/butr.js',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'dist')
   },
@@ -29,19 +30,13 @@ const baseConfig = {
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
       }
     ]
   },
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin()]
-  }
+    minimizer: [new TerserPlugin()],
+  },
 }
 
 let configs = []
