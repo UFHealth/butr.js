@@ -753,7 +753,7 @@ export const stickyNav = options => {
 
   let pos = 0
   let bottomPos = 0
-  let bottomElement = document.querySelector(settings.bottomAnchor) || null
+  let bottomElement = settings.bottomAnchor.length ? document.querySelector(settings.bottomAnchor) : null
   let nav = document.querySelector('.js-butr-nav')
   let isSticky = false
   let isAtBottom = false
