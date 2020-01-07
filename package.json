@@ -23,14 +23,13 @@
     "build": "NODE_ENV=production run-s js:build manifest",
     "bump": "shipit",
     "post-bump": "npm install",
-    "release": "run-s \"bump {@}\" post-bump build --"
+    "release": "run-s \"bump {@}\" post-bump build --",
+    "example": "http-server \"./example\" -p 5000"
   },
   "browserslist": [
     "> 1% in US, ie 11"
   ],
   "devDependencies": {
-    "classlist-polyfill": "^1.2.0",
-    "core-js": "^3.1.4",
     "@babel/core": "^7.5.5",
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.5.5",
@@ -38,6 +37,8 @@
     "@ufhealth/shipit": "git+ssh://git@gitlab.ahc.ufl.edu:webservices/dev-ops/shipit.git#master",
     "babel-loader": "^8.0.6",
     "browser-sync": "^2.26.7",
+    "classlist-polyfill": "^1.2.0",
+    "core-js": "^3.1.4",
     "eslint": "^6.1.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-import": "^2.18.2",
@@ -45,6 +46,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "glob": "^7.1.4",
+    "http-server": "^0.12.0",
     "npm-run-all": "^4.1.5",
     "object-assign": "^4.1.1",
     "onchange": "^6.0.0",

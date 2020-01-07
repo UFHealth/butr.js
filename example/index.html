@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Hello, Butr!</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <p>Meow</p>
+
+  <script src="/butr.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Butr.init({
+        to: true,
+        marker: true,
+        threshold: 80,
+        markerClass: 'TOC__Marker',
+        activeClass: 'TOC__Item--active',
+        distanceTop: '129px',
+        olClass: 'list-reset m-0',
+        liClass: 'nav-item',
+        aClass: 'nav-link Sidebar__Link'
+      })
+    })
+  </script>
+</body>
+
+</html>
