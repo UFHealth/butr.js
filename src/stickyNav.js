@@ -1,5 +1,3 @@
-export default {
-  init () {
-    console.log('sticky nav init!')
-  }
+export const StickyNav = (options) => {
+
 }

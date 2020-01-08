@@ -1,17 +1,38 @@
-import To from './to'
-import Marker from './marker'
-import AutoAnchors from './autoAnchors'
-import AutoSidebar from './autoSidebar'
-import StickyNav from './stickyNav'
+import { To } from './to'
+import { Marker } from './marker'
+import { AutoAnchors } from './autoAnchors'
+import { AutoSidebar } from './autoSidebar'
+import { StickyNav } from './stickyNav'
 
 const init = (options) => {
-  console.log(options)
-
-  if (options.to) To.init()
-  if (options.marker) Marker.init()
-  if (options.autoAnchors) AutoAnchors.init()
-  if (options.autoSidebar) AutoSidebar.init()
-  if (options.stickyNav) StickyNav.init()
+  // To
+  if (options.To || options.AutoAnchors) {
+    To({
+      threshold: options.threshold || 0
+    })
+  }
+  // Marker
+  if (options.Marker) {
+    Marker()
+  }
+  // Sidebar
+  if (options.AutoSidebar) {
+    AutoSidebar({
+      olClass: options.olClass || '',
+      liClass: options.liClass || '',
+      aClass: options.aClass || ''
+    })
+  }
+  // Anchors
+  if (options.AutoAnchors) {
+    AutoAnchors({
+      to: {
+        threshold: options.threshold || 0
+      }
+    })
+  }
+  // Sticky Nav
+  if (options.StickyNav) StickyNav()
 }
 
 window.Butr = {

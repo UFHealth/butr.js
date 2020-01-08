@@ -1,3 +1,4 @@
+const fs = require('fs')
 /*
  |--------------------------------------------------------------------------
  | Browser-sync config file
@@ -13,10 +14,18 @@
  */
 module.exports = {
   files: [
-    'dist/css/*.css',
-    'docs/public/css/*.css',
-    'dist/js/*.js',
-    'docs/templates/**/*.twig'
+    'example/*.html',
+    'example/*.js',
+    {
+      match: ['dist/*.js'],
+      fn: (e, file) => {
+        fs.copyFile(
+          './dist/butr.js',
+          './example/butr.js',
+          e => { if (e) console.log(e) }
+        )
+      }
+    }
   ],
   watchEvents: [
     'change',
@@ -24,7 +33,7 @@ module.exports = {
     'addDir'
   ],
   watch: true,
-  proxy: 'localhost:8000',
+  proxy: 'localhost:5000',
   port: 3000,
   notify: false,
   ghostMode: false,
