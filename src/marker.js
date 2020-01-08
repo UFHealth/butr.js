@@ -1,3 +1,7 @@
+import objAssign from 'object-assign'
+import { throttle, appendClasses } from './utils'
+import { State } from './state'
+
 /**
  * butr.marker()
  *
@@ -7,18 +11,7 @@
  */
 export const Marker = options => {
 
-  // Set defaults
-  const defaults = {
-    scrollingElement: false,
-    duration: 400,
-    callback: false,
-    markerClass: '',
-    activeClass: '',
-    threshold: 0
-  }
-
-  // Determine settings based on defaults + user provided options
-  let settings = objAssign({}, defaults, options)
+  const { settings } = State
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -108,7 +101,8 @@ export const Marker = options => {
     let heading
     for (let i = 0; i < headings.length; i++) {
       let rect = headings[i].getBoundingClientRect()
-      if (((rect.top + top) - settings.threshold) > top) {
+      // The -2 here is to prevent the sillies.
+      if (((rect.top + top) - settings.scrollOffset - 2) > top) {
         if (!heading) heading = headings[i]
         break
       } else heading = headings[i]
@@ -152,7 +146,7 @@ export const Marker = options => {
    */
   const contentScrolled = throttle(() => {
     // If it's animating don't try to update active nav
-    if (!animating) updateNav()
+    if (!State.animating) updateNav()
   }, 33)
 
   const init = () => {

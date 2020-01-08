@@ -1,8 +1,5 @@
 import objAssign from 'object-assign'
-
-export let State = {
-  animating: false
-}
+import { State } from './state'
 
 /**
  * Super basic throttle - just like sitepoint's throttle

@@ -1,5 +1,6 @@
 import objAssign from 'object-assign'
 import { animate } from './utils'
+import { State } from './state'
 
 /**
  * butr.to()
@@ -11,7 +12,6 @@ import { animate } from './utils'
  */
 export const To = options => {
 
-  console.log(options)
   // Set defaults
   const defaults = {
     scrollingElement: false,
@@ -20,7 +20,7 @@ export const To = options => {
     speed: 1,
     keepHash: true,
     callback: null,
-    threshold: 0
+    scrollOffset: 0
   }
 
   // Determine settings based on defaults + user provided options
@@ -65,11 +65,11 @@ export const To = options => {
       let rect = targetEl.getBoundingClientRect()
       if (targetEl && settings.direction === 'x') {
         let left = scrollingElement.scrollLeft
-        return Math.max(rect.left + left - settings.threshold, 0)
+        return Math.max(rect.left + left - settings.scrollOffset, 0)
       }
       if (targetEl && settings.direction === 'y') {
         let top = scrollingElement.scrollTop
-        return Math.max(rect.top + top - settings.threshold, 0)
+        return Math.max(rect.top + top - settings.scrollOffset, 0)
       }
       return 0
     }

@@ -20,11 +20,11 @@
     }
 
     main {
-      flex-grow: 1;
       font-size: 1.35em;
       line-height: 1.4;
-      margin-bottom: 600px;
+      margin-bottom: 24px;
       padding: 0 24px;
+      width: calc(100% - 320px);
     }
 
     aside {
@@ -33,25 +33,45 @@
       padding: 0 24px;
       border-left: 1px solid lightgray;
       align-self: flex-start;
+
+      position: fixed;
+      right: 0;
     }
 
     h1 {
       margin-top: 0;
     }
 
-    .SidebarNav > .SidebarNav__List {
+    .SidebarNav {
+      position: relative;
+    }
+
+    .SidebarNav > .Butr__Sidebar__List {
       padding: 0;
     }
 
-    .SidebarNav__List {
+    .Butr__Sidebar__List {
       list-style-type: none;
       padding-left: 16px;
       margin: 0;
     }
 
-    .SidebarNav__Item {
-      margin-top: 4px;
-      margin-bottom: 4px;
+    .Butr__Sidebar__Item {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .Butr__Sidebar__Link {
+      color: #d34510;
+    }
+
+    .Butr__Marker {
+      background-color: #d34510;
+      position: absolute;
+      left: -26px;
+      top: 0;
+      height: 24px;
+      width: 3px;
     }
 
     .Annoying {
@@ -63,6 +83,14 @@
       position: fixed;
       top: 0;
       width: 100%;
+    }
+
+    footer {
+      background-color: gray;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      padding: 400px 24px;
     }
   </style>
 </head>
@@ -87,6 +115,12 @@
       </p>
       <p>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
       </p>
 
       <h3>Heading 1.1</h3>
@@ -131,6 +165,44 @@
       <p>
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
       </p>
+
+      <h2>Heading 4</h2>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+
+      <h3>Heading 4.1</h3>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+
+      <h2>Heading 5</h2>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
+
+      <h3>Heading 5.1</h3>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur ad officia fugit aut eius consectetur cum nesciunt qui eligendi dolor? Fuga, aliquid? Obcaecati ipsam perferendis rerum labore eveniet quos ab!
+      </p>
     </main>
 
     <aside>
@@ -140,22 +212,21 @@
     </aside>
   </div>
 
+  <footer>
+    Big Ole Footer
+  </footer>
+
   <script src="/butr.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       Butr.init({
         To: false,
-        Marker: false,
+        Marker: true,
         AutoAnchors: true,
         AutoSidebar: true,
         StickyNav: false,
-        threshold: 126,
-        markerClass: 'SidebarNav__Marker',
-        activeClass: 'SidebarNav__Item--active',
+        scrollOffset: 126,
         distanceTop: '129px',
-        olClass: 'SidebarNav__List',
-        liClass: 'SidebarNav__Item',
-        aClass: 'SidebarNav__Link'
       })
     })
   </script>

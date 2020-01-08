@@ -1,40 +1,46 @@
+import objAssign from 'object-assign'
 import { To } from './to'
 import { Marker } from './marker'
 import { AutoAnchors } from './autoAnchors'
 import { AutoSidebar } from './autoSidebar'
 import { StickyNav } from './stickyNav'
+import { State } from './state'
+
+const defaults = {
+  // To
+  target: 0,
+  direction: 'y',
+  keepHash: true,
+  speed: 1,
+  afterTo: null,
+  scrollOffset: 0,
+
+  // Sidebar
+  olClass: 'Butr__Sidebar__List',
+  liClass: 'Butr__Sidebar__Item',
+  aClass: 'Butr__Sidebar__Link',
+
+  // Marker
+  scrollingElement: null,
+  duration: 320,
+  markerClass: 'Butr__Marker',
+  activeClass: 'Butr__Sidebar__Link--active',
+
+  // Sticky
+  distanceTop: 0,
+  mediaQuery: false,
+}
 
 const init = (options) => {
-  // To
-  if (options.To || options.AutoAnchors) {
-    To({
-      threshold: options.threshold || 0
-    })
-  }
-  // Marker
-  if (options.Marker) {
-    Marker()
-  }
-  // Sidebar
-  if (options.AutoSidebar) {
-    AutoSidebar({
-      olClass: options.olClass || '',
-      liClass: options.liClass || '',
-      aClass: options.aClass || ''
-    })
-  }
-  // Anchors
-  if (options.AutoAnchors) {
-    AutoAnchors({
-      to: {
-        threshold: options.threshold || 0
-      }
-    })
-  }
-  // Sticky Nav
+  State.settings = objAssign({}, defaults, options)
+  if (options.To || options.AutoAnchors) To()
+  if (options.AutoSidebar) AutoSidebar()
+  if (options.AutoAnchors) AutoAnchors()
+  if (options.Marker) Marker()
   if (options.StickyNav) StickyNav()
 }
 
 window.Butr = {
-  init
+  init,
+  to: To
 }

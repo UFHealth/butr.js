@@ -1,5 +1,6 @@
 import objAssign from 'object-assign'
 import { appendClasses } from './utils'
+import { State } from './state'
 
 /**
  * Automatically generate sidebar nav links based on the headings in the content.
@@ -7,16 +8,8 @@ import { appendClasses } from './utils'
  * @param {object} options Configuration options.
  */
 export const AutoSidebar = options => {
-  // Set defaults
-  const defaults = {
-    olClass: '',
-    liClass: '',
-    aClass: '',
-    prepend: false
-  }
 
-  // Determine settings based on defaults + user provided options
-  let settings = objAssign({}, defaults, options)
+  const { settings } = State
 
   let content
   let headings
