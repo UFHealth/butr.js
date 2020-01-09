@@ -1,4 +1,3 @@
-import objAssign from 'object-assign'
 import { animate } from './utils'
 import { State } from './state'
 
@@ -12,19 +11,7 @@ import { State } from './state'
  */
 export const To = options => {
 
-  // Set defaults
-  const defaults = {
-    scrollingElement: false,
-    target: 0,
-    direction: 'y',
-    speed: 1,
-    keepHash: true,
-    callback: null,
-    scrollOffset: 0
-  }
-
-  // Determine settings based on defaults + user provided options
-  let settings = objAssign({}, defaults, options)
+  const { settings } = State
 
   // User may prefer reduced motion - do not animate to scroll position
   let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -91,7 +78,7 @@ export const To = options => {
    * callback once the animation is done (if it's defined)
    */
   const afterScroll = () => {
-    if (typeof settings.callback === 'function') settings.callback()
+    if (typeof settings.afterTo === 'function') settings.afterTo()
   }
 
   /**

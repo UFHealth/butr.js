@@ -1,4 +1,3 @@
-import objAssign from 'object-assign'
 import { throttle, appendClasses } from './utils'
 import { State } from './state'
 

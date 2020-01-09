@@ -34,7 +34,7 @@
     "@babel/polyfill": "^7.7.0",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-react": "^7.0.0",
-    "@ufhealth/shipit": "git+ssh://git@gitlab.ahc.ufl.edu:webservices/dev-ops/shipit.git#master",
+    "@ufhealth/shipit": "^0.2.1",
     "babel-loader": "^8.0.6",
     "browser-sync": "^2.26.7",
     "classlist-polyfill": "^1.2.0",

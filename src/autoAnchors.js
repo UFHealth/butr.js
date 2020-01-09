@@ -1,4 +1,3 @@
-import objAssign from 'object-assign'
 import { To } from './to'
 import { State } from './state'
 

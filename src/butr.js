@@ -14,18 +14,15 @@ const defaults = {
   speed: 1,
   afterTo: null,
   scrollOffset: 0,
-
   // Sidebar
   olClass: 'Butr__Sidebar__List',
   liClass: 'Butr__Sidebar__Item',
   aClass: 'Butr__Sidebar__Link',
-
   // Marker
   scrollingElement: null,
   duration: 320,
   markerClass: 'Butr__Marker',
   activeClass: 'Butr__Sidebar__Link--active',
-
   // Sticky
   distanceTop: 0,
   mediaQuery: false,
@@ -42,5 +39,6 @@ const init = (options) => {
 
 window.Butr = {
   init,
+  // Expose to as method for using with anything else
   to: To
 }
