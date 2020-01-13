@@ -130,6 +130,40 @@ eval("var toIndexedObject = __webpack_require__(/*! ../internals/to-indexed-obje
 
 /***/ }),
 
+/***/ "./node_modules/core-js/internals/array-method-has-species-support.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/core-js/internals/array-method-has-species-support.js ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var fails = __webpack_require__(/*! ../internals/fails */ \"./node_modules/core-js/internals/fails.js\");\nvar wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ \"./node_modules/core-js/internals/well-known-symbol.js\");\nvar V8_VERSION = __webpack_require__(/*! ../internals/engine-v8-version */ \"./node_modules/core-js/internals/engine-v8-version.js\");\n\nvar SPECIES = wellKnownSymbol('species');\n\nmodule.exports = function (METHOD_NAME) {\n  // We can't use this feature detection in V8 since it causes\n  // deoptimization and serious performance degradation\n  // https://github.com/zloirock/core-js/issues/677\n  return V8_VERSION >= 51 || !fails(function () {\n    var array = [];\n    var constructor = array.constructor = {};\n    constructor[SPECIES] = function () {\n      return { foo: 1 };\n    };\n    return array[METHOD_NAME](Boolean).foo !== 1;\n  });\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/array-method-has-species-support.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/array-method-is-strict.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/core-js/internals/array-method-is-strict.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar fails = __webpack_require__(/*! ../internals/fails */ \"./node_modules/core-js/internals/fails.js\");\n\nmodule.exports = function (METHOD_NAME, argument) {\n  var method = [][METHOD_NAME];\n  return !!method && fails(function () {\n    // eslint-disable-next-line no-useless-call,no-throw-literal\n    method.call(null, argument || function () { throw 1; }, 1);\n  });\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/array-method-is-strict.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/array-species-create.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/core-js/internals/array-species-create.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var isObject = __webpack_require__(/*! ../internals/is-object */ \"./node_modules/core-js/internals/is-object.js\");\nvar isArray = __webpack_require__(/*! ../internals/is-array */ \"./node_modules/core-js/internals/is-array.js\");\nvar wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ \"./node_modules/core-js/internals/well-known-symbol.js\");\n\nvar SPECIES = wellKnownSymbol('species');\n\n// `ArraySpeciesCreate` abstract operation\n// https://tc39.github.io/ecma262/#sec-arrayspeciescreate\nmodule.exports = function (originalArray, length) {\n  var C;\n  if (isArray(originalArray)) {\n    C = originalArray.constructor;\n    // cross-realm fallback\n    if (typeof C == 'function' && (C === Array || isArray(C.prototype))) C = undefined;\n    else if (isObject(C)) {\n      C = C[SPECIES];\n      if (C === null) C = undefined;\n    }\n  } return new (C === undefined ? Array : C)(length === 0 ? 0 : length);\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/array-species-create.js?");
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/classof-raw.js":
 /*!*******************************************************!*\
   !*** ./node_modules/core-js/internals/classof-raw.js ***!
@@ -174,6 +208,18 @@ eval("module.exports = function (bitmap, value) {\n  return {\n    enumerable: !
 
 /***/ }),
 
+/***/ "./node_modules/core-js/internals/create-property.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/core-js/internals/create-property.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar toPrimitive = __webpack_require__(/*! ../internals/to-primitive */ \"./node_modules/core-js/internals/to-primitive.js\");\nvar definePropertyModule = __webpack_require__(/*! ../internals/object-define-property */ \"./node_modules/core-js/internals/object-define-property.js\");\nvar createPropertyDescriptor = __webpack_require__(/*! ../internals/create-property-descriptor */ \"./node_modules/core-js/internals/create-property-descriptor.js\");\n\nmodule.exports = function (object, key, value) {\n  var propertyKey = toPrimitive(key);\n  if (propertyKey in object) definePropertyModule.f(object, propertyKey, createPropertyDescriptor(0, value));\n  else object[propertyKey] = value;\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/create-property.js?");
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/descriptors.js":
 /*!*******************************************************!*\
   !*** ./node_modules/core-js/internals/descriptors.js ***!
@@ -193,6 +239,28 @@ eval("var fails = __webpack_require__(/*! ../internals/fails */ \"./node_modules
 /***/ (function(module, exports, __webpack_require__) {
 
 eval("var global = __webpack_require__(/*! ../internals/global */ \"./node_modules/core-js/internals/global.js\");\nvar isObject = __webpack_require__(/*! ../internals/is-object */ \"./node_modules/core-js/internals/is-object.js\");\n\nvar document = global.document;\n// typeof document.createElement is 'object' in old IE\nvar EXISTS = isObject(document) && isObject(document.createElement);\n\nmodule.exports = function (it) {\n  return EXISTS ? document.createElement(it) : {};\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/document-create-element.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/engine-user-agent.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/core-js/internals/engine-user-agent.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var getBuiltIn = __webpack_require__(/*! ../internals/get-built-in */ \"./node_modules/core-js/internals/get-built-in.js\");\n\nmodule.exports = getBuiltIn('navigator', 'userAgent') || '';\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/engine-user-agent.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/engine-v8-version.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/core-js/internals/engine-v8-version.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var global = __webpack_require__(/*! ../internals/global */ \"./node_modules/core-js/internals/global.js\");\nvar userAgent = __webpack_require__(/*! ../internals/engine-user-agent */ \"./node_modules/core-js/internals/engine-user-agent.js\");\n\nvar process = global.process;\nvar versions = process && process.versions;\nvar v8 = versions && versions.v8;\nvar match, version;\n\nif (v8) {\n  match = v8.split('.');\n  version = match[0] + match[1];\n} else if (userAgent) {\n  match = userAgent.match(/Edge\\/(\\d+)/);\n  if (!match || match[1] >= 74) {\n    match = userAgent.match(/Chrome\\/(\\d+)/);\n    if (match) version = match[1];\n  }\n}\n\nmodule.exports = version && +version;\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/engine-v8-version.js?");
 
 /***/ }),
 
@@ -329,6 +397,17 @@ eval("var NATIVE_WEAK_MAP = __webpack_require__(/*! ../internals/native-weak-map
 
 /***/ }),
 
+/***/ "./node_modules/core-js/internals/is-array.js":
+/*!****************************************************!*\
+  !*** ./node_modules/core-js/internals/is-array.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var classof = __webpack_require__(/*! ../internals/classof-raw */ \"./node_modules/core-js/internals/classof-raw.js\");\n\n// `IsArray` abstract operation\n// https://tc39.github.io/ecma262/#sec-isarray\nmodule.exports = Array.isArray || function isArray(arg) {\n  return classof(arg) == 'Array';\n};\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/is-array.js?");
+
+/***/ }),
+
 /***/ "./node_modules/core-js/internals/is-forced.js":
 /*!*****************************************************!*\
   !*** ./node_modules/core-js/internals/is-forced.js ***!
@@ -381,6 +460,17 @@ eval("var fails = __webpack_require__(/*! ../internals/fails */ \"./node_modules
 /***/ (function(module, exports, __webpack_require__) {
 
 eval("var global = __webpack_require__(/*! ../internals/global */ \"./node_modules/core-js/internals/global.js\");\nvar inspectSource = __webpack_require__(/*! ../internals/inspect-source */ \"./node_modules/core-js/internals/inspect-source.js\");\n\nvar WeakMap = global.WeakMap;\n\nmodule.exports = typeof WeakMap === 'function' && /native code/.test(inspectSource(WeakMap));\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/native-weak-map.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/internals/number-parse-float.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/core-js/internals/number-parse-float.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var global = __webpack_require__(/*! ../internals/global */ \"./node_modules/core-js/internals/global.js\");\nvar trim = __webpack_require__(/*! ../internals/string-trim */ \"./node_modules/core-js/internals/string-trim.js\").trim;\nvar whitespaces = __webpack_require__(/*! ../internals/whitespaces */ \"./node_modules/core-js/internals/whitespaces.js\");\n\nvar $parseFloat = global.parseFloat;\nvar FORCED = 1 / $parseFloat(whitespaces + '-0') !== -Infinity;\n\n// `parseFloat` method\n// https://tc39.github.io/ecma262/#sec-parsefloat-string\nmodule.exports = FORCED ? function parseFloat(string) {\n  var trimmedString = trim(String(string));\n  var result = $parseFloat(trimmedString);\n  return result === 0 && trimmedString.charAt(0) == '-' ? -0 : result;\n} : $parseFloat;\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/internals/number-parse-float.js?");
 
 /***/ }),
 
@@ -740,6 +830,41 @@ eval("// a string of all valid unicode whitespaces\n// eslint-disable-next-line 
 
 /***/ }),
 
+/***/ "./node_modules/core-js/modules/es.array.concat.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/core-js/modules/es.array.concat.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar $ = __webpack_require__(/*! ../internals/export */ \"./node_modules/core-js/internals/export.js\");\nvar fails = __webpack_require__(/*! ../internals/fails */ \"./node_modules/core-js/internals/fails.js\");\nvar isArray = __webpack_require__(/*! ../internals/is-array */ \"./node_modules/core-js/internals/is-array.js\");\nvar isObject = __webpack_require__(/*! ../internals/is-object */ \"./node_modules/core-js/internals/is-object.js\");\nvar toObject = __webpack_require__(/*! ../internals/to-object */ \"./node_modules/core-js/internals/to-object.js\");\nvar toLength = __webpack_require__(/*! ../internals/to-length */ \"./node_modules/core-js/internals/to-length.js\");\nvar createProperty = __webpack_require__(/*! ../internals/create-property */ \"./node_modules/core-js/internals/create-property.js\");\nvar arraySpeciesCreate = __webpack_require__(/*! ../internals/array-species-create */ \"./node_modules/core-js/internals/array-species-create.js\");\nvar arrayMethodHasSpeciesSupport = __webpack_require__(/*! ../internals/array-method-has-species-support */ \"./node_modules/core-js/internals/array-method-has-species-support.js\");\nvar wellKnownSymbol = __webpack_require__(/*! ../internals/well-known-symbol */ \"./node_modules/core-js/internals/well-known-symbol.js\");\nvar V8_VERSION = __webpack_require__(/*! ../internals/engine-v8-version */ \"./node_modules/core-js/internals/engine-v8-version.js\");\n\nvar IS_CONCAT_SPREADABLE = wellKnownSymbol('isConcatSpreadable');\nvar MAX_SAFE_INTEGER = 0x1FFFFFFFFFFFFF;\nvar MAXIMUM_ALLOWED_INDEX_EXCEEDED = 'Maximum allowed index exceeded';\n\n// We can't use this feature detection in V8 since it causes\n// deoptimization and serious performance degradation\n// https://github.com/zloirock/core-js/issues/679\nvar IS_CONCAT_SPREADABLE_SUPPORT = V8_VERSION >= 51 || !fails(function () {\n  var array = [];\n  array[IS_CONCAT_SPREADABLE] = false;\n  return array.concat()[0] !== array;\n});\n\nvar SPECIES_SUPPORT = arrayMethodHasSpeciesSupport('concat');\n\nvar isConcatSpreadable = function (O) {\n  if (!isObject(O)) return false;\n  var spreadable = O[IS_CONCAT_SPREADABLE];\n  return spreadable !== undefined ? !!spreadable : isArray(O);\n};\n\nvar FORCED = !IS_CONCAT_SPREADABLE_SUPPORT || !SPECIES_SUPPORT;\n\n// `Array.prototype.concat` method\n// https://tc39.github.io/ecma262/#sec-array.prototype.concat\n// with adding support of @@isConcatSpreadable and @@species\n$({ target: 'Array', proto: true, forced: FORCED }, {\n  concat: function concat(arg) { // eslint-disable-line no-unused-vars\n    var O = toObject(this);\n    var A = arraySpeciesCreate(O, 0);\n    var n = 0;\n    var i, k, length, len, E;\n    for (i = -1, length = arguments.length; i < length; i++) {\n      E = i === -1 ? O : arguments[i];\n      if (isConcatSpreadable(E)) {\n        len = toLength(E.length);\n        if (n + len > MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);\n        for (k = 0; k < len; k++, n++) if (k in E) createProperty(A, n, E[k]);\n      } else {\n        if (n >= MAX_SAFE_INTEGER) throw TypeError(MAXIMUM_ALLOWED_INDEX_EXCEEDED);\n        createProperty(A, n++, E);\n      }\n    }\n    A.length = n;\n    return A;\n  }\n});\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/modules/es.array.concat.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.array.join.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/core-js/modules/es.array.join.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar $ = __webpack_require__(/*! ../internals/export */ \"./node_modules/core-js/internals/export.js\");\nvar IndexedObject = __webpack_require__(/*! ../internals/indexed-object */ \"./node_modules/core-js/internals/indexed-object.js\");\nvar toIndexedObject = __webpack_require__(/*! ../internals/to-indexed-object */ \"./node_modules/core-js/internals/to-indexed-object.js\");\nvar arrayMethodIsStrict = __webpack_require__(/*! ../internals/array-method-is-strict */ \"./node_modules/core-js/internals/array-method-is-strict.js\");\n\nvar nativeJoin = [].join;\n\nvar ES3_STRINGS = IndexedObject != Object;\nvar STRICT_METHOD = arrayMethodIsStrict('join', ',');\n\n// `Array.prototype.join` method\n// https://tc39.github.io/ecma262/#sec-array.prototype.join\n$({ target: 'Array', proto: true, forced: ES3_STRINGS || !STRICT_METHOD }, {\n  join: function join(separator) {\n    return nativeJoin.call(toIndexedObject(this), separator === undefined ? ',' : separator);\n  }\n});\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/modules/es.array.join.js?");
+
+/***/ }),
+
+/***/ "./node_modules/core-js/modules/es.parse-float.js":
+/*!********************************************************!*\
+  !*** ./node_modules/core-js/modules/es.parse-float.js ***!
+  \********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var $ = __webpack_require__(/*! ../internals/export */ \"./node_modules/core-js/internals/export.js\");\nvar parseFloatImplementation = __webpack_require__(/*! ../internals/number-parse-float */ \"./node_modules/core-js/internals/number-parse-float.js\");\n\n// `parseFloat` method\n// https://tc39.github.io/ecma262/#sec-parsefloat-string\n$({ global: true, forced: parseFloat != parseFloatImplementation }, {\n  parseFloat: parseFloatImplementation\n});\n\n\n//# sourceURL=webpack://%5Bname%5D/./node_modules/core-js/modules/es.parse-float.js?");
+
+/***/ }),
+
 /***/ "./node_modules/core-js/modules/es.parse-int.js":
 /*!******************************************************!*\
   !*** ./node_modules/core-js/modules/es.parse-int.js ***!
@@ -854,7 +979,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var obje
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Marker\", function() { return Marker; });\n/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ \"./src/utils.js\");\n/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./state */ \"./src/state.js\");\n\n\n/**\n * Marker()\n *\n * Create and animate a marker to indicate active state in a nav.\n *\n * @param {object} settings\n */\n\nvar Marker = function Marker() {\n  var settings = _state__WEBPACK_IMPORTED_MODULE_1__[\"State\"].settings; // User may prefer reduced motion - do not animate to scroll position\n\n  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches; // Initialize required data\n\n  var top;\n  var marker;\n  var scrollingElement;\n  var links;\n  var content;\n  var headings;\n  var nav;\n  /**\n   * Set scrollingElement with el query or with default body el\n   * Get other required elements.\n   */\n\n  var getRequiredElements = function getRequiredElements() {\n    scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;\n    nav = document.querySelector('.js-butr-nav');\n    links = document.querySelectorAll('.js-butr-link');\n    content = document.querySelector('.js-butr-content'); // Only collect headings that are in the sidebar\n\n    headings = [];\n\n    for (var i = links.length - 1; i >= 0; i--) {\n      headings.unshift(content.querySelector(links[i].getAttribute('href')));\n    }\n  };\n  /**\n   * Make sure required elements are in place.\n   *\n   * @return {boolean} Tru only if required elements exist.\n   */\n\n\n  var checkRequiredElements = function checkRequiredElements() {\n    if (!nav || !links || !content) {\n      console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker');\n      return false;\n    }\n\n    return true;\n  };\n  /**\n   * Create a marker element with animated css props.\n   */\n\n\n  var createMarker = function createMarker() {\n    marker = document.createElement('div');\n    marker.classList.add('js-butr-marker');\n    if (settings.markerClass) Object(_utils__WEBPACK_IMPORTED_MODULE_0__[\"appendClasses\"])(marker, settings.markerClass);\n    marker.style.height = links[0].offsetHeight + 'px'; // http://easings.net/#easeInOutQuad\n    // Should match function in Butr.to easing.\n\n    if (!prefersReducedMotion) {\n      marker.style.transition = settings.duration + 'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)';\n    }\n\n    nav.appendChild(marker);\n  };\n  /**\n   * Set marker position to animate to.\n   *\n   * @param {Node} activeLink currently active link\n   */\n\n\n  var setMarkerPosition = function setMarkerPosition(activeLink) {\n    marker.style.transform = \"translateY(\".concat(activeLink.offsetTop, \"px)\");\n  };\n  /**\n   * When a link is clicked - set active link\n   */\n\n\n  var setupLinkEvents = function setupLinkEvents() {\n    var _loop = function _loop(i) {\n      links[i].addEventListener('click', function (e) {\n        setActive(links[i].hash);\n      });\n    };\n\n    for (var i = 0; i < links.length; i++) {\n      _loop(i);\n    }\n  };\n  /**\n   * Loop over headings and reassign active class to links as needed.\n   */\n\n\n  var checkActive = function checkActive() {\n    var heading;\n\n    for (var i = 0; i < headings.length; i++) {\n      var rect = headings[i].getBoundingClientRect(); // The -2 here is to prevent the sillies.\n\n      if (rect.top + top - settings.scrollOffset - 2 > top) {\n        if (!heading) heading = headings[i];\n        break;\n      } else heading = headings[i];\n    }\n\n    if (heading) setActive('#' + heading.id);\n  };\n  /**\n   * Toggle active class between nav links.\n   *\n   * @param {string} hash Section link to make active.\n   */\n\n\n  var setActive = function setActive(hash) {\n    var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');\n    var currentlyActive = document.querySelector('.js-butr-link[href=\"' + hash + '\"]');\n    if (currentlyActive === previouslyActive) return;\n\n    if (previouslyActive) {\n      previouslyActive.classList.remove('js-butr-active');\n      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass);\n    }\n\n    if (currentlyActive) {\n      currentlyActive.classList.add('js-butr-active');\n      if (settings.activeClass) Object(_utils__WEBPACK_IMPORTED_MODULE_0__[\"appendClasses\"])(currentlyActive, settings.activeClass);\n      setMarkerPosition(currentlyActive);\n    }\n  };\n  /**\n   * Set top scroll position and use it to check which link should be active.\n   */\n\n\n  var updateNav = function updateNav() {\n    top = scrollingElement.scrollTop;\n    checkActive();\n  };\n  /**\n   * Call for scrolling event\n   *\n   * Throttled to prevent excessive calls\n   */\n\n\n  var contentScrolled = Object(_utils__WEBPACK_IMPORTED_MODULE_0__[\"throttle\"])(function () {\n    // If it's animating don't try to update active nav\n    if (!_state__WEBPACK_IMPORTED_MODULE_1__[\"State\"].animating) updateNav();\n  }, 33);\n\n  var init = function init() {\n    getRequiredElements(); // If all elements are present, initialize marker\n\n    if (checkRequiredElements()) {\n      createMarker();\n      setupLinkEvents();\n      updateNav();\n      window.addEventListener('scroll', contentScrolled);\n    }\n  };\n\n  init();\n};\n\n//# sourceURL=webpack://%5Bname%5D/./src/marker.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Marker\", function() { return Marker; });\n/* harmony import */ var core_js_modules_es_array_concat__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.array.concat */ \"./node_modules/core-js/modules/es.array.concat.js\");\n/* harmony import */ var core_js_modules_es_array_concat__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_concat__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var core_js_modules_es_array_join__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/modules/es.array.join */ \"./node_modules/core-js/modules/es.array.join.js\");\n/* harmony import */ var core_js_modules_es_array_join__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_join__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var core_js_modules_es_parse_float__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/modules/es.parse-float */ \"./node_modules/core-js/modules/es.parse-float.js\");\n/* harmony import */ var core_js_modules_es_parse_float__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_parse_float__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils */ \"./src/utils.js\");\n/* harmony import */ var _state__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./state */ \"./src/state.js\");\n\n\n\n\n\n/**\n * Marker()\n *\n * Create and animate a marker to indicate active state in a nav.\n *\n * @param {object} settings\n */\n\nvar Marker = function Marker() {\n  var settings = _state__WEBPACK_IMPORTED_MODULE_4__[\"State\"].settings; // User may prefer reduced motion - do not animate to scroll position\n\n  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches; // Initialize required data\n\n  var top;\n  var marker;\n  var scrollingElement;\n  var links;\n  var content;\n  var headings;\n  var nav;\n  /**\n   * Set scrollingElement with el query or with default body el\n   * Get other required elements.\n   */\n\n  var getRequiredElements = function getRequiredElements() {\n    scrollingElement = settings.scrollingElement ? document.querySelector(settings.scrollingElement) : document.scrollingElement || document.documentElement;\n    nav = document.querySelector('.js-butr-nav');\n    links = document.querySelectorAll('.js-butr-link');\n    content = document.querySelector('.js-butr-content'); // Only collect headings that are in the sidebar\n\n    headings = [];\n\n    for (var i = links.length - 1; i >= 0; i--) {\n      headings.unshift(content.querySelector(links[i].getAttribute('href')));\n    }\n  };\n  /**\n   * Make sure required elements are in place.\n   *\n   * @return {boolean} Tru only if required elements exist.\n   */\n\n\n  var checkRequiredElements = function checkRequiredElements() {\n    if (!nav || !links || !content) {\n      console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker');\n      return false;\n    }\n\n    return true;\n  };\n  /**\n   * Create a marker element with animated css props.\n   */\n\n\n  var createMarker = function createMarker() {\n    marker = document.createElement('div');\n    marker.classList.add('js-butr-marker');\n    if (settings.markerClass) Object(_utils__WEBPACK_IMPORTED_MODULE_3__[\"appendClasses\"])(marker, settings.markerClass);\n    marker.style.height = links[0].offsetHeight + 'px'; // http://easings.net/#easeInOutQuad\n    // Should match function in Butr.to easing.\n\n    var easing = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)';\n\n    if (!prefersReducedMotion) {\n      marker.style.transition = [\"\".concat(settings.duration, \"ms transform \").concat(easing), \"\".concat(settings.duration, \"ms height \").concat(easing)].join(',');\n    }\n\n    nav.appendChild(marker);\n  };\n  /**\n   * Set marker position to animate to.\n   *\n   * @param {Node} activeLink currently active link\n   */\n\n\n  var setMarkerPosition = function setMarkerPosition(activeLink) {\n    var translatePos = activeLink.offsetTop;\n    var style = window.getComputedStyle(activeLink);\n\n    if (style.getPropertyValue('box-sizing') === 'border-box') {\n      translatePos -= Math.round(parseFloat(style.getPropertyValue('border-top-width'), 10));\n    }\n\n    marker.style.transform = \"translateY(\".concat(translatePos, \"px)\");\n    marker.style.height = \"\".concat(activeLink.offsetHeight, \"px\");\n  };\n  /**\n   * When a link is clicked - set active link\n   */\n\n\n  var setupLinkEvents = function setupLinkEvents() {\n    var _loop = function _loop(i) {\n      links[i].addEventListener('click', function (e) {\n        setActive(links[i].hash);\n      });\n    };\n\n    for (var i = 0; i < links.length; i++) {\n      _loop(i);\n    }\n  };\n  /**\n   * Loop over headings and reassign active class to links as needed.\n   */\n\n\n  var checkActive = function checkActive() {\n    var heading;\n\n    for (var i = 0; i < headings.length; i++) {\n      if (!headings[i]) continue;\n      var rect = headings[i].getBoundingClientRect(); // The -2 here is to prevent the sillies.\n\n      if (rect.top + top - settings.scrollOffset - 2 > top) {\n        if (!heading) heading = headings[i];\n        break;\n      } else heading = headings[i];\n    }\n\n    if (heading) setActive('#' + heading.id);\n  };\n  /**\n   * Toggle active class between nav links.\n   *\n   * @param {string} hash Section link to make active.\n   */\n\n\n  var setActive = function setActive(hash) {\n    var previouslyActive = document.querySelector('.js-butr-link.js-butr-active');\n    var currentlyActive = document.querySelector('.js-butr-link[href=\"' + hash + '\"]');\n    if (currentlyActive === previouslyActive) return;\n\n    if (previouslyActive) {\n      previouslyActive.classList.remove('js-butr-active');\n      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass);\n    }\n\n    if (currentlyActive) {\n      currentlyActive.classList.add('js-butr-active');\n      if (settings.activeClass) Object(_utils__WEBPACK_IMPORTED_MODULE_3__[\"appendClasses\"])(currentlyActive, settings.activeClass);\n      setMarkerPosition(currentlyActive);\n    }\n  };\n  /**\n   * Set top scroll position and use it to check which link should be active.\n   */\n\n\n  var updateNav = function updateNav() {\n    top = scrollingElement.scrollTop;\n    checkActive();\n  };\n  /**\n   * Call for scrolling event\n   *\n   * Throttled to prevent excessive calls\n   */\n\n\n  var contentScrolled = Object(_utils__WEBPACK_IMPORTED_MODULE_3__[\"throttle\"])(function () {\n    // If it's animating don't try to update active nav\n    if (!_state__WEBPACK_IMPORTED_MODULE_4__[\"State\"].animating) updateNav();\n  }, 33);\n\n  var init = function init() {\n    getRequiredElements(); // If all elements are present, initialize marker\n\n    if (checkRequiredElements()) {\n      createMarker();\n      setupLinkEvents();\n      updateNav();\n      window.addEventListener('scroll', contentScrolled);\n    }\n  };\n\n  init();\n};\n\n//# sourceURL=webpack://%5Bname%5D/./src/marker.js?");
 
 /***/ }),
 
