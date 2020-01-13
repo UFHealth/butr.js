@@ -2,11 +2,11 @@ import { appendClasses } from './utils'
 import { State } from './state'
 
 /**
- * Automatically generate sidebar nav links based on the headings in the content.
+ * AutoSidebar()
  *
- * @param {object} options Configuration options.
+ * Automatically generate sidebar nav links based on the headings in the content.
  */
-export const AutoSidebar = options => {
+export const AutoSidebar = () => {
 
   const { settings } = State
 

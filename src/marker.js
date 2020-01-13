@@ -2,13 +2,13 @@ import { throttle, appendClasses } from './utils'
 import { State } from './state'
 
 /**
- * butr.marker()
+ * Marker()
  *
  * Create and animate a marker to indicate active state in a nav.
  *
  * @param {object} settings
  */
-export const Marker = options => {
+export const Marker = () => {
 
   const { settings } = State
 

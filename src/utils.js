@@ -171,3 +171,14 @@ export const animate = options => {
 
   startAnimation()
 }
+
+/**
+   * Extract int from string with unit (px, em, etc)
+   *
+   * @param  {string} txt
+   * @return {int}    number left over from string
+   */
+  export const extractInt = txt => {
+    if (typeof txt === 'number') return txt
+    return parseInt(txt.replace(/[^0-9\.]+/g, ''))
+  }

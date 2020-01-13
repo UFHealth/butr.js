@@ -2,11 +2,11 @@ import { To } from './to'
 import { State } from './state'
 
 /**
- * butr.autoAnchors()
+ * AutoAnchors()
  *
  * Animate all anchors that use the data-butr attribute.
  */
-export const AutoAnchors = options => {
+export const AutoAnchors = () => {
   let links = document.body.querySelectorAll('a[data-butr]')
 
   // Exit before for loop if there are no anchors on the page

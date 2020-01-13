@@ -25,12 +25,14 @@ const defaults = {
   activeClass: 'Butr__Sidebar__Link--active',
   // Sticky
   distanceTop: 0,
+  topBuffer: 0,
+  avoid: null,
+  avoidBuffer: 0,
   mediaQuery: false,
 }
 
 const init = (options) => {
   State.settings = objAssign({}, defaults, options)
-  if (options.To || options.AutoAnchors) To()
   if (options.AutoSidebar) AutoSidebar()
   if (options.AutoAnchors) AutoAnchors()
   if (options.Marker) Marker()
