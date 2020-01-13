@@ -65,10 +65,12 @@ export const Marker = () => {
     marker.style.height = links[0].offsetHeight + 'px'
     // http://easings.net/#easeInOutQuad
     // Should match function in Butr.to easing.
+    const easing = 'cubic-bezier(0.455, 0.03, 0.515, 0.955)'
     if (!prefersReducedMotion) {
-      marker.style.transition =
-        settings.duration +
-        'ms transform cubic-bezier(0.455, 0.03, 0.515, 0.955)'
+      marker.style.transition = [
+        `${settings.duration}ms transform ${easing}`,
+        `${settings.duration}ms height ${easing}`
+      ].join(',')
     }
     nav.appendChild(marker)
   }
@@ -79,7 +81,13 @@ export const Marker = () => {
    * @param {Node} activeLink currently active link
    */
   const setMarkerPosition = activeLink => {
-    marker.style.transform = `translateY(${activeLink.offsetTop}px)`
+    let translatePos = activeLink.offsetTop
+    const style = window.getComputedStyle(activeLink)
+    if (style.getPropertyValue('box-sizing') === 'border-box') {
+      translatePos -= Math.round(parseFloat(style.getPropertyValue('border-top-width'), 10))
+    }
+    marker.style.transform = `translateY(${translatePos}px)`
+    marker.style.height = `${activeLink.offsetHeight}px`
   }
 
   /**
@@ -99,6 +107,7 @@ export const Marker = () => {
   const checkActive = () => {
     let heading
     for (let i = 0; i < headings.length; i++) {
+      if (!headings[i]) continue
       let rect = headings[i].getBoundingClientRect()
       // The -2 here is to prevent the sillies.
       if (((rect.top + top) - settings.scrollOffset - 2) > top) {
