@@ -20,6 +20,7 @@
     "reload": "browser-sync start -c build-system/config.browsersync.js",
     "dev": "NODE_ENV=development run-p js:watch reload",
     "build": "NODE_ENV=production run-s js:build",
+    "bam": "NODE_ENV=development webpack --config build-system/as-module.config.webpack.js",
     "bump": "shipit",
     "post-bump": "npm install",
     "release": "run-s \"bump {@}\" post-bump build --",

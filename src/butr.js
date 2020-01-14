@@ -39,8 +39,10 @@ const init = (options) => {
   if (options.StickyNav) StickyNav()
 }
 
-window.Butr = {
+const Butr = {
   init,
   // Expose to as method for using with anything else
   to: To
 }
+
+export default Butr

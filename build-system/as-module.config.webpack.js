@@ -1,5 +1,5 @@
 const path = require('path')
-//const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const isDev = process.env.NODE_ENV === 'development'
 const mode = isDev ? 'development' : 'production'
@@ -9,15 +9,11 @@ module.exports = {
   mode,
   devtool,
   entry: {
-    Butr: './src/butr.js',
+    bundle: './example/as-module.js',
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
-    filename: '[name].js',
-    library: '[name]',
-    libraryTarget: 'umd',
-    libraryExport: 'default',
-    umdNamedDefine: true
+    path: path.resolve(__dirname, '../example'),
+    filename: '[name].js'
   },
   module: {
     rules: [
@@ -29,7 +25,9 @@ module.exports = {
           options: {
             presets: [
               ['@babel/preset-env', {
-                modules: false
+                // modules: false,
+                // useBuiltIns: 'usage',
+                // corejs: 3
               }],
             ]
           }
