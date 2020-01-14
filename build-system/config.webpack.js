@@ -22,16 +22,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.js$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
               ['@babel/preset-env', {
-                modules: false,
-                useBuiltIns: 'usage',
-                corejs: 3
+                // modules: false,
+                // useBuiltIns: 'usage',
+                // corejs: 3
               }],
             ]
           }
