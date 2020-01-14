@@ -1,4 +1,4 @@
-import objAssign from 'object-assign'
+import './polyfills'
 import { To } from './to'
 import { Marker } from './marker'
 import { AutoAnchors } from './autoAnchors'
@@ -32,7 +32,7 @@ const defaults = {
 }
 
 const init = (options) => {
-  State.settings = objAssign({}, defaults, options)
+  State.settings = Object.assign({}, defaults, options)
   if (options.AutoSidebar) AutoSidebar()
   if (options.AutoAnchors) AutoAnchors()
   if (options.Marker) Marker()

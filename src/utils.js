@@ -1,4 +1,3 @@
-import objAssign from 'object-assign'
 import { State } from './state'
 
 /**
@@ -42,28 +41,6 @@ export const debounce = (callback, delay) => {
 }
 
 /**
- * Timing (Easing) functions
- * https://gist.github.com/gre/1650294
- *
- * @type {Object}
- */
-export const timingFunctions = {
-  linear (t) { return t },
-  easeInQuad (t) { return t*t },
-  easeOutQuad (t) { return t*(2-t) },
-  easeInOutQuad (t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
-  easeInCubic (t) { return t*t*t },
-  easeOutCubic (t) { return (--t)*t*t+1 },
-  easeInOutCubic (t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
-  easeInQuart (t) { return t*t*t*t },
-  easeOutQuart (t) { return 1-(--t)*t*t*t },
-  easeInOutQuart (t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
-  easeInQuint (t) { return t*t*t*t*t },
-  easeOutQuint (t) { return 1+(--t)*t*t*t*t },
-  easeInOutQuint (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
-}
-
-/**
  * Append Class to HTML Element
  * @param  {object} el
  * @param  {string} classes
@@ -89,7 +66,7 @@ export const animate = options => {
   }
 
   // Determine settings based on defaults + user provided options
-  let settings = objAssign({}, defaults, options)
+  let settings = Object.assign({}, defaults, options)
 
   let start
   let end
