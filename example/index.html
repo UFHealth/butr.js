@@ -18,7 +18,7 @@
 
     .wrapper {
       max-width: 1024px;
-      margin: 128px auto 24px auto;
+      margin: 128px auto 256px auto;
       display: flex;
     }
 
@@ -31,10 +31,12 @@
     }
 
     aside {
+      /*border: 1px solid red;*/
       flex-shrink: 0;
       width: 240px;
       position: relative;
       padding-top: 102px;
+      padding-bottom: 128px;
     }
 
     h1 {
@@ -91,20 +93,34 @@
       z-index: 100;
     }
 
+    .BigDumbHero {
+      background-color: gray;
+      padding: 400px 0;
+      color: white;
+      text-align: center;
+      /*display: none;*/
+    }
+
     footer {
       background-color: gray;
       color: white;
       font-weight: bold;
       text-align: center;
       padding: 400px 24px;
+      /*display: none;*/
     }
   </style>
 </head>
 
 <body>
-  <div class="Annoying">
+  <div class="Annoying js-butr-avoidAbove">
     <p>I'm an annoying info or nav bar that will require an offset!</p>
   </div>
+
+  <header class="BigDumbHero">
+    Hero or something!
+  </header>
+
   <div class="wrapper">
     <main class="MainContent js-butr-content">
       <h1>Hello, Butr</h1>
@@ -232,16 +248,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       Butr.init({
-        To: false,
         Marker: true,
         AutoAnchors: true,
         AutoSidebar: true,
         StickyNav: true,
-        scrollOffset: 126,
-        distanceTop: 0,
-        topBuffer: 30,
-        avoid: '.Footer',
-        avoidBuffer: 24,
+        scrollOffset: 128,
         mediaQuery: '(min-width: 1200px)'
       })
     })

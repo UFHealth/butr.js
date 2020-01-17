@@ -1,4 +1,4 @@
-import { debounce, throttle, extractInt } from './utils'
+import { throttle } from './utils'
 import { State } from './state'
 
 /**
@@ -10,31 +10,29 @@ import { State } from './state'
 export const StickyNav = () => {
 
   const { settings } = State
-
-  let scrollingElement = (document.scrollingElement || document.documentElement)
   let nav = document.querySelector('.js-butr-nav')
-  let navInitialTop = nav.offsetTop
-  let avoid = settings.avoid
-    ? document.querySelector(settings.avoid)
-    : null
+  let parent = nav.parentElement
+  let parentStyle = window.getComputedStyle(parent)
+  let parentSpaceTop = parseInt(parentStyle.getPropertyValue('padding-top'), 10)
+  let parentSpaceBottom = parseInt(parentStyle.getPropertyValue('padding-bottom'), 10)
 
   /**
    * Calculate width of nav based on parent container
    * Function is debounced to prevent excessive calls during scroll
    */
-  const setWidth = debounce(() => {
-    let parentStyle = window.getComputedStyle(nav.parentNode)
-    let paddingRight = extractInt(parentStyle.getPropertyValue('padding-right'))
-    let paddingLeft = extractInt(parentStyle.getPropertyValue('padding-left'))
-    let width = extractInt(parentStyle.getPropertyValue('width'))
+  const setWidth = () => {
+    let paddingRight = parseInt(parentStyle.getPropertyValue('padding-right'), 10)
+    let paddingLeft = parseInt(parentStyle.getPropertyValue('padding-left'), 10)
+    let width = parseInt(parentStyle.getPropertyValue('width'), 10)
     nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
-  }, 250)
+    nav.style.width = '100%'
+  }
 
   /**
    * Stick the navbar with position fixed
    */
   const setToStick = () => {
-    nav.style.top = navInitialTop + settings.topBuffer + 'px'
+    nav.style.top = State.topBuffer + parentSpaceTop + 'px'
     nav.style.position = 'fixed'
     nav.style.bottom = 'auto'
   }
@@ -46,7 +44,7 @@ export const StickyNav = () => {
   const setToPark = () => {
     nav.style.position = 'absolute'
     nav.style.top = 'auto'
-    nav.style.bottom = '0'
+    nav.style.bottom = parentSpaceBottom + 'px'
   }
 
   /**
@@ -59,27 +57,48 @@ export const StickyNav = () => {
   }
 
   /**
+   * Determine size of buffers. Honestly could probably use offsetHeight
+   * here just as well as top and bottom. Top and bottom guarantee no collisions
+   * thought because height does not account for negative margin or other oddities!
+   *
+   * The two elements are grabbed via class the consumer puts on elements to avoid.
+   */
+  const determineBuffers = () => {
+    let aboveEl = document.querySelector('.js-butr-avoidAbove')
+    let belowEl = document.querySelector('.js-butr-avoidBelow')
+    if (aboveEl) {
+      State.topBuffer = Math.round(aboveEl.getBoundingClientRect().bottom)
+    }
+    if (belowEl) {
+      State.bottomBuffer = Math.round(belowEl.getBoundingClientRect().top)
+    }
+  }
+
+  /**
    * When scrolling or resizing make sure the navbar is set to the appropriate
-   * position. Throttled to prevent excessive calls. Currenly shoots for 30FPS.
+   * position. Throttled to prevent excessive calls. Currently shoots for 30FPS.
    */
   const handleScrollResize = throttle(() => {
-    let position = getComputedStyle(nav).position
-    let rect = nav.getBoundingClientRect()
-    let navWithBuffer =  Math.ceil(rect.bottom) + settings.avoidBuffer
+    const position = getComputedStyle(nav).position
+    const navRect = nav.getBoundingClientRect()
+    const parentRect = parent.getBoundingClientRect()
+    const parentTop = Math.round(parentRect.top)
+    const parentBottom = Math.round(parentRect.bottom)
+    const navTop = Math.round(navRect.top)
+    const navBottom = Math.round(navRect.bottom)
 
     if (position === 'fixed') {
-      if ((scrollingElement.scrollTop < navInitialTop)) {
+      if (parentTop > State.topBuffer) {
         setToInitial()
-      }
-      if (scrollingElement.scrollTop + navWithBuffer >= avoid.offsetTop) {
+      } else if (parentBottom - parentSpaceBottom < navBottom) {
         setToPark()
       }
     } else if (position === 'absolute') {
-      if (scrollingElement.scrollTop < nav.offsetTop) {
+      if (navTop >= State.topBuffer + parentSpaceTop) {
         setToStick()
       }
     } else if (position === 'relative') {
-      if ((scrollingElement.scrollTop >= navInitialTop)) {
+      if (navTop - State.topBuffer - parentSpaceTop <= 0) {
         setToStick()
       }
     }
@@ -90,6 +109,7 @@ export const StickyNav = () => {
    */
   const init = () => {
     setWidth()
+    determineBuffers()
     handleScrollResize()
     window.addEventListener('scroll', handleScrollResize)
     window.addEventListener('resize', handleScrollResize)
