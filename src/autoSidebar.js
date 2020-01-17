@@ -7,7 +7,6 @@ import { State } from './state'
  * Automatically generate sidebar nav links based on the headings in the content.
  */
 export const AutoSidebar = () => {
-
   const { settings } = State
 
   let content
@@ -29,8 +28,8 @@ export const AutoSidebar = () => {
     let generated = text.toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/(\d)\./g, '$1-')
-      .replace(/[^\w\-]+/g, '')
-      .replace(/\-\-+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
       .replace(/^-+/, '')
       .replace(/-+$/, '')
 

@@ -9,7 +9,6 @@ import { State } from './state'
  * @param {object} settings
  */
 export const Marker = () => {
-
   const { settings } = State
 
   // User may prefer reduced motion - do not animate to scroll position
