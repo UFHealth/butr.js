@@ -24,11 +24,7 @@ const defaults = {
   markerClass: 'Butr__Marker',
   activeClass: 'Butr__Sidebar__Link--active',
   // Sticky
-  distanceTop: 0,
-  topBuffer: 0,
-  avoid: null,
-  avoidBuffer: 0,
-  mediaQuery: false,
+  mediaQuery: false
 }
 
 const init = (options) => {
