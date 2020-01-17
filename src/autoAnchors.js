@@ -22,7 +22,7 @@ export const AutoAnchors = () => {
         keepHash: State.settings.keepHash,
         speed: State.settings.speed,
         afterTo: State.settings.afterTo,
-        scrollOffset: State.settings.scrollOffset,
+        scrollOffset: State.settings.scrollOffset
       })
     })
   }

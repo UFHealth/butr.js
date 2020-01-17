@@ -7,9 +7,8 @@ import { animate } from './utils'
  * (location or hash).
  */
 export const To = (options) => {
-
   // User may prefer reduced motion - do not animate to scroll position
-  let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
 
   // Initialize required data
   let start
@@ -43,14 +42,14 @@ export const To = (options) => {
    */
   const getTargetPosition = () => {
     if (options.target[0] === '#') {
-      let targetEl = document.getElementById(options.target.substr(1))
-      let rect = targetEl.getBoundingClientRect()
+      const targetEl = document.getElementById(options.target.substr(1))
+      const rect = targetEl.getBoundingClientRect()
       if (targetEl && options.direction === 'x') {
-        let left = scrollingElement.scrollLeft
+        const left = scrollingElement.scrollLeft
         return Math.max(rect.left + left - options.scrollOffset, 0)
       }
       if (targetEl && options.direction === 'y') {
-        let top = scrollingElement.scrollTop
+        const top = scrollingElement.scrollTop
         return Math.max(rect.top + top - options.scrollOffset, 0)
       }
       return 0
@@ -86,7 +85,7 @@ export const To = (options) => {
    * @return {int} duration (in ms)
    */
   const calcDuration = distance => {
-    let coefficient = 24 * (1 / options.speed)
+    const coefficient = 24 * (1 / options.speed)
     return coefficient * Math.sqrt(Math.abs(distance))
   }
 
@@ -103,7 +102,7 @@ export const To = (options) => {
       animate({
         duration: calcDuration(end - start),
         loop (calcIncrement) {
-          let distance = calcIncrement(start, end)
+          const distance = calcIncrement(start, end)
           scrollTheEl(distance)
         },
         done: afterScroll

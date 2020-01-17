@@ -8,22 +8,21 @@ import { State } from './state'
  * visible
  */
 export const StickyNav = () => {
-
   const { settings } = State
-  let nav = document.querySelector('.js-butr-nav')
-  let parent = nav.parentElement
-  let parentStyle = window.getComputedStyle(parent)
-  let parentSpaceTop = parseInt(parentStyle.getPropertyValue('padding-top'), 10)
-  let parentSpaceBottom = parseInt(parentStyle.getPropertyValue('padding-bottom'), 10)
+  const nav = document.querySelector('.js-butr-nav')
+  const parent = nav.parentElement
+  const parentStyle = window.getComputedStyle(parent)
+  const parentSpaceTop = parseInt(parentStyle.getPropertyValue('padding-top'), 10)
+  const parentSpaceBottom = parseInt(parentStyle.getPropertyValue('padding-bottom'), 10)
 
   /**
    * Calculate width of nav based on parent container
    * Function is debounced to prevent excessive calls during scroll
    */
   const setWidth = () => {
-    let paddingRight = parseInt(parentStyle.getPropertyValue('padding-right'), 10)
-    let paddingLeft = parseInt(parentStyle.getPropertyValue('padding-left'), 10)
-    let width = parseInt(parentStyle.getPropertyValue('width'), 10)
+    const paddingRight = parseInt(parentStyle.getPropertyValue('padding-right'), 10)
+    const paddingLeft = parseInt(parentStyle.getPropertyValue('padding-left'), 10)
+    const width = parseInt(parentStyle.getPropertyValue('width'), 10)
     nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
     nav.style.width = '100%'
   }
@@ -64,8 +63,8 @@ export const StickyNav = () => {
    * The two elements are grabbed via class the consumer puts on elements to avoid.
    */
   const determineBuffers = () => {
-    let aboveEl = document.querySelector('.js-butr-avoidAbove')
-    let belowEl = document.querySelector('.js-butr-avoidBelow')
+    const aboveEl = document.querySelector('.js-butr-avoidAbove')
+    const belowEl = document.querySelector('.js-butr-avoidBelow')
     if (aboveEl) {
       State.topBuffer = Math.round(aboveEl.getBoundingClientRect().bottom)
     }
@@ -126,5 +125,4 @@ export const StickyNav = () => {
   } else {
     init()
   }
-
 }

@@ -16,7 +16,7 @@
   "scripts": {
     "js:watch": "webpack -w --config build-system/config.webpack.js",
     "js:build": "webpack --config build-system/config.webpack.js",
-    "js:lint": "eslint 'src/js/**/*.js' -c build-system/config.eslint.js",
+    "js:lint": "eslint 'src/**/*.js' -c build-system/config.eslint.js",
     "reload": "browser-sync start -c build-system/config.browsersync.js",
     "dev": "NODE_ENV=development run-p js:watch reload",
     "build": "NODE_ENV=production run-s js:build",
