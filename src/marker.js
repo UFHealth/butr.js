@@ -82,9 +82,6 @@ export const Marker = () => {
   const setMarkerPosition = activeLink => {
     let translatePos = activeLink.offsetTop
     const style = window.getComputedStyle(activeLink)
-    if (style.getPropertyValue('box-sizing') === 'border-box') {
-      translatePos -= Math.round(parseFloat(style.getPropertyValue('border-top-width'), 10))
-    }
     marker.style.transform = `translateY(${translatePos}px)`
     marker.style.height = `${activeLink.offsetHeight}px`
   }
