@@ -104,7 +104,7 @@ export const StickyNav = () => {
       }
     } else if (position === 'relative') {
       // If we are coming to the page far down where the nav can't fit, park it initially
-      if (parentBottom - parentSpaceBottom < nav.offsetHeight + State.topBuffer) {
+      if (parentBottom - parentSpaceBottom < nav.offsetHeight + State.topBuffer + parentSpaceTop) {
         setToPark()
       // If we are coming to the page a ways where the nav should be fixed do that initially
       } else if (navTop - State.topBuffer - parentSpaceTop <= 0) {
