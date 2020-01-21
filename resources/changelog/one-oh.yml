@@ -1,0 +1,10 @@
+new:
+  - Large refactor, smaller payload, better performace
+  - New API for using Butr
+  - New classes for elements for the stickyNav to more smartly avoid collisions
+
+fixed:
+  - Fix cross browser bugs
+  - Fix rounding issues
+  - Fix collision with footers and other content that comes after stickyNav
+  - Fix marker height and position during transition to active links
