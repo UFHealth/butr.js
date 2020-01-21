@@ -31,9 +31,11 @@ export const StickyNav = () => {
    * Stick the navbar with position fixed
    */
   const setToStick = () => {
-    nav.style.top = State.topBuffer + parentSpaceTop + 'px'
-    nav.style.position = 'fixed'
-    nav.style.bottom = 'auto'
+    const cssString = ';'
+      + 'position: fixed; '
+      + 'top: ' + (State.topBuffer + parentSpaceTop) + 'px; '
+      + 'bottom: auto;'
+    nav.style.cssText += cssString
   }
 
   /**
@@ -41,18 +43,22 @@ export const StickyNav = () => {
    * with the 'avoid' element option if it exists
    */
   const setToPark = () => {
-    nav.style.position = 'absolute'
-    nav.style.top = 'auto'
-    nav.style.bottom = parentSpaceBottom + 'px'
+    const cssString = ';'
+      + 'position: absolute; '
+      + 'top: auto; '
+      + 'bottom: ' + parentSpaceBottom + 'px;'
+    nav.style.cssText += cssString
   }
 
   /**
    * Set the navbar to it's setToInitial, unmodified position
    */
   const setToInitial = () => {
-    nav.style.position = 'relative'
-    nav.style.top = 'auto'
-    nav.style.bottom = 'auto'
+    let cssString = ';'
+      + 'position: relative; '
+      + 'top: auto; '
+      + 'bottom: auto;'
+    nav.style.cssText += cssString
   }
 
   /**
@@ -97,7 +103,11 @@ export const StickyNav = () => {
         setToStick()
       }
     } else if (position === 'relative') {
-      if (navTop - State.topBuffer - parentSpaceTop <= 0) {
+      // If we are coming to the page far down where the nav can't fit, park it initially
+      if (parentBottom - parentSpaceBottom < nav.offsetHeight + State.topBuffer) {
+        setToPark()
+      // If we are coming to the page a ways where the nav should be fixed do that initially
+      } else if (navTop - State.topBuffer - parentSpaceTop <= 0) {
         setToStick()
       }
     }
