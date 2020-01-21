@@ -18,7 +18,7 @@
     "js:build": "webpack --config build-system/config.webpack.js",
     "js:lint": "eslint 'src/**/*.js' -c build-system/config.eslint.js",
     "reload": "browser-sync start -c build-system/config.browsersync.js",
-    "dev": "NODE_ENV=development run-p js:watch reload",
+    "dev": "NODE_ENV=development run-p example js:watch reload",
     "build": "NODE_ENV=production run-s js:build",
     "bam": "NODE_ENV=development webpack --config build-system/as-module.config.webpack.js",
     "bump": "shipit",
