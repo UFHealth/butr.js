@@ -1,4 +1,5 @@
 import { animate } from './utils'
+import { State } from './state'
 
 /**
  * To() & butr.to()
@@ -6,7 +7,9 @@ import { animate } from './utils'
  * A stand alone, globally accessible method for scrolling to a target
  * (location or hash).
  */
-export const To = (options) => {
+export const To = (options = {}) => {
+  options = Object.assign({}, State.settings, options)
+
   // User may prefer reduced motion - do not animate to scroll position
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
 
