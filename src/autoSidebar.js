@@ -106,7 +106,7 @@ export const AutoSidebar = () => {
    */
   const createItem = heading => {
     return {
-      label: heading.textContent,
+      label: heading.textContent.trim(),
       hash: createHash(heading),
       children: []
     }
