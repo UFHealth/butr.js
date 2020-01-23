@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 1.0.1
+
+**Fixed**
+- Remove any leading and tailing whitespace from heading text
+
 ### 1.0.0
 
 **New**
