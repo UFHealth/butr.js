@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 1.0.2
+
+**Fixed**
+- Fix missing defaults on `To` method
+
 ### 1.0.1
 
 **Fixed**
