@@ -1,4 +1,5 @@
 import { animate } from './utils'
+import { State } from './state'
 
 /**
  * To() & butr.to()
@@ -6,14 +7,19 @@ import { animate } from './utils'
  * A stand alone, globally accessible method for scrolling to a target
  * (location or hash).
  */
-export const To = (options = {}) => {
+export const To = (options) => {
   const defaults = {
     target: 0,
     direction: 'y',
     keepHash: true,
     speed: 1,
     afterTo: null,
-    scrollOffset: 0,
+    /**
+     * A global offset can be passed from Butr's initialization that will be used
+     * as the default instead of 0 when needed. Otherwise it can be explicitly
+     * set when using To() or Butr.to()
+     */
+    scrollOffset: State.settings.scrollOffset || 0,
   }
   options = Object.assign({}, defaults, options)
 
