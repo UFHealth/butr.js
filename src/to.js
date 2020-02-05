@@ -1,5 +1,4 @@
 import { animate } from './utils'
-import { State } from './state'
 
 /**
  * To() & butr.to()
@@ -8,7 +7,15 @@ import { State } from './state'
  * (location or hash).
  */
 export const To = (options = {}) => {
-  options = Object.assign({}, State.settings, options)
+  const defaults = {
+    target: 0,
+    direction: 'y',
+    keepHash: true,
+    speed: 1,
+    afterTo: null,
+    scrollOffset: 0,
+  }
+  options = Object.assign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -35,7 +42,7 @@ export const To = (options = {}) => {
    */
   const getCurrentPosition = () => {
     if (options.direction === 'x') return scrollingElement.scrollLeft
-    if (options.direction === 'y') return scrollingElement.scrollTop
+    else return scrollingElement.scrollTop
   }
 
   /**
@@ -67,7 +74,7 @@ export const To = (options = {}) => {
    */
   const scrollTheEl = distance => {
     if (options.direction === 'x') scrollingElement.scrollLeft = distance
-    if (options.direction === 'y') scrollingElement.scrollTop = distance
+    else scrollingElement.scrollTop = distance
   }
 
   /**

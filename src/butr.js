@@ -7,13 +7,6 @@ import { StickyNav } from './stickyNav'
 import { State } from './state'
 
 const defaults = {
-  // To
-  target: 0,
-  direction: 'y',
-  keepHash: true,
-  speed: 1,
-  afterTo: null,
-  scrollOffset: 0,
   // Sidebar
   olClass: 'Butr__Sidebar__List',
   liClass: 'Butr__Sidebar__Item',
