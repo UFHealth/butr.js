@@ -7,8 +7,21 @@ import { State } from './state'
  * A stand alone, globally accessible method for scrolling to a target
  * (location or hash).
  */
-export const To = (options = {}) => {
-  options = Object.assign({}, State.settings, options)
+export const To = (options) => {
+  const defaults = {
+    target: 0,
+    direction: 'y',
+    keepHash: true,
+    speed: 1,
+    afterTo: null,
+    /**
+     * A global offset can be passed from Butr's initialization that will be used
+     * as the default instead of 0 when needed. Otherwise it can be explicitly
+     * set when using To() or Butr.to()
+     */
+    scrollOffset: State.settings.scrollOffset || 0,
+  }
+  options = Object.assign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
@@ -35,7 +48,7 @@ export const To = (options = {}) => {
    */
   const getCurrentPosition = () => {
     if (options.direction === 'x') return scrollingElement.scrollLeft
-    if (options.direction === 'y') return scrollingElement.scrollTop
+    else return scrollingElement.scrollTop
   }
 
   /**
@@ -67,7 +80,7 @@ export const To = (options = {}) => {
    */
   const scrollTheEl = distance => {
     if (options.direction === 'x') scrollingElement.scrollLeft = distance
-    if (options.direction === 'y') scrollingElement.scrollTop = distance
+    else scrollingElement.scrollTop = distance
   }
 
   /**
