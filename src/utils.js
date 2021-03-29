@@ -5,14 +5,14 @@ import { State } from './state'
  * https://www.sitepoint.com/throttle-scroll-events/
  *
  * @param  {Function} callback
- * @param  {[type]}   delay
+ * @param  {Number}   delay
  * @return {Function} throttled callback
  */
 export const throttle = (callback, delay) => {
   let timeout = null
   let time = performance.now()
   return () => {
-    if ((time + delay - performance.now()) < 0) {
+    if (time + delay - performance.now() < 0) {
       callback()
       time = performance.now()
     }
@@ -23,8 +23,8 @@ export const throttle = (callback, delay) => {
 
 /**
  * Append Class to HTML Element
- * @param  {object} el
- * @param  {string} classes
+ * @param  {Object} el
+ * @param  {String} classes
  */
 export const appendClasses = (el, classes) => {
   const classStr = el.className + (' ' + classes)
@@ -36,9 +36,9 @@ export const appendClasses = (el, classes) => {
  * Animation function - accepts duration, callback for animation loop (each
  * frame), callback when animation is complete, and option for easing function.
  *
- * @param {object} options
+ * @param {Object} options
  */
-export const animate = options => {
+export const animate = (options) => {
   const defaults = {
     duration: 800,
     loop: null,
@@ -111,19 +111,45 @@ export const animate = options => {
    * @type {Object}
    */
   const timingFunctions = {
-    linear (t) { return t },
-    easeInQuad (t) { return t * t },
-    easeOutQuad (t) { return t * (2 - t) },
-    easeInOutQuad (t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t },
-    easeInCubic (t) { return t * t * t },
-    easeOutCubic (t) { return (--t) * t * t + 1 },
-    easeInOutCubic (t) { return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1 },
-    easeInQuart (t) { return t * t * t * t },
-    easeOutQuart (t) { return 1 - (--t) * t * t * t },
-    easeInOutQuart (t) { return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t },
-    easeInQuint (t) { return t * t * t * t * t },
-    easeOutQuint (t) { return 1 + (--t) * t * t * t * t },
-    easeInOutQuint (t) { return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t }
+    linear(t) {
+      return t
+    },
+    easeInQuad(t) {
+      return t * t
+    },
+    easeOutQuad(t) {
+      return t * (2 - t)
+    },
+    easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t
+    },
+    easeInCubic(t) {
+      return t * t * t
+    },
+    easeOutCubic(t) {
+      return --t * t * t + 1
+    },
+    easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+    },
+    easeInQuart(t) {
+      return t * t * t * t
+    },
+    easeOutQuart(t) {
+      return 1 - --t * t * t * t
+    },
+    easeInOutQuart(t) {
+      return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t
+    },
+    easeInQuint(t) {
+      return t * t * t * t * t
+    },
+    easeOutQuint(t) {
+      return 1 + --t * t * t * t * t
+    },
+    easeInOutQuint(t) {
+      return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t
+    }
   }
 
   startAnimation()

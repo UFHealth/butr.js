@@ -14,7 +14,7 @@ export const AutoAnchors = () => {
 
   // When clicking a link, use butr to scroll to the element with that id
   for (let i = 0; i < links.length; i++) {
-    links[i].addEventListener('click', e => {
+    links[i].addEventListener('click', (e) => {
       e.preventDefault()
       To({
         target: e.currentTarget.getAttribute('href')

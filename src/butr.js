@@ -20,6 +20,10 @@ const defaults = {
   mediaQuery: false
 }
 
+/**
+ * Initialize function for all of butr
+ * @param {Object} options
+ */
 const init = (options) => {
   State.settings = Object.assign({}, defaults, options)
   if (options.AutoSidebar) AutoSidebar()

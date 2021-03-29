@@ -6,13 +6,14 @@ import { State } from './state'
  *
  * Create and animate a marker to indicate active state in a nav.
  *
- * @param {object} settings
+ * @param {Object} settings
  */
 export const Marker = () => {
   const { settings } = State
 
   // User may prefer reduced motion - do not animate to scroll position
-  let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
+  let prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)')
+    .matches
 
   // Initialize required data
   let top
@@ -44,11 +45,13 @@ export const Marker = () => {
   /**
    * Make sure required elements are in place.
    *
-   * @return {boolean} Tru only if required elements exist.
+   * @return {Boolean} Tru only if required elements exist.
    */
   const checkRequiredElements = () => {
     if (!nav || !links || !content) {
-      console.error('Error: Missing required classes on nav or links. Aborted setup of Butr.marker')
+      console.error(
+        'Error: Missing required classes on nav or links. Aborted setup of Butr.marker'
+      )
       return false
     }
     return true
@@ -79,7 +82,7 @@ export const Marker = () => {
    *
    * @param {Node} activeLink currently active link
    */
-  const setMarkerPosition = activeLink => {
+  const setMarkerPosition = (activeLink) => {
     let translatePos = activeLink.offsetTop
     const style = window.getComputedStyle(activeLink)
     marker.style.transform = `translateY(${translatePos}px)`
@@ -91,7 +94,7 @@ export const Marker = () => {
    */
   const setupLinkEvents = () => {
     for (let i = 0; i < links.length; i++) {
-      links[i].addEventListener('click', e => {
+      links[i].addEventListener('click', (e) => {
         setActive(links[i].hash)
       })
     }
@@ -106,7 +109,7 @@ export const Marker = () => {
       if (!headings[i]) continue
       let rect = headings[i].getBoundingClientRect()
       // The -2 here is to prevent the sillies.
-      if (((rect.top + top) - settings.scrollOffset - 2) > top) {
+      if (rect.top + top - settings.scrollOffset - 2 > top) {
         if (!heading) heading = headings[i]
         break
       } else heading = headings[i]
@@ -117,20 +120,26 @@ export const Marker = () => {
   /**
    * Toggle active class between nav links.
    *
-   * @param {string} hash Section link to make active.
+   * @param {String} hash Section link to make active.
    */
-  const setActive = hash => {
-    let previouslyActive = document.querySelector('.js-butr-link.js-butr-active')
-    let currentlyActive = document.querySelector('.js-butr-link[href="' + hash + '"]')
+  const setActive = (hash) => {
+    let previouslyActive = document.querySelector(
+      '.js-butr-link.js-butr-active'
+    )
+    let currentlyActive = document.querySelector(
+      '.js-butr-link[href="' + hash + '"]'
+    )
     if (currentlyActive === previouslyActive) return
 
     if (previouslyActive) {
       previouslyActive.classList.remove('js-butr-active')
-      if (settings.activeClass) previouslyActive.classList.remove(settings.activeClass)
+      if (settings.activeClass)
+        previouslyActive.classList.remove(settings.activeClass)
     }
     if (currentlyActive) {
       currentlyActive.classList.add('js-butr-active')
-      if (settings.activeClass) appendClasses(currentlyActive, settings.activeClass)
+      if (settings.activeClass)
+        appendClasses(currentlyActive, settings.activeClass)
       setMarkerPosition(currentlyActive)
     }
   }

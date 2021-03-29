@@ -19,12 +19,13 @@ export const To = (options) => {
      * as the default instead of 0 when needed. Otherwise it can be explicitly
      * set when using To() or Butr.to()
      */
-    scrollOffset: State.settings.scrollOffset || 0,
+    scrollOffset: State.settings.scrollOffset || 0
   }
   options = Object.assign({}, defaults, options)
 
   // User may prefer reduced motion - do not animate to scroll position
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)').matches
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion)')
+    .matches
 
   // Initialize required data
   let start
@@ -78,7 +79,7 @@ export const To = (options) => {
    *
    * @param {Number} distance Amount to scroll.
    */
-  const scrollTheEl = distance => {
+  const scrollTheEl = (distance) => {
     if (options.direction === 'x') scrollingElement.scrollLeft = distance
     else scrollingElement.scrollTop = distance
   }
@@ -97,10 +98,10 @@ export const To = (options) => {
    * ensuring no scroll animations are excessively long even on long pages
    * https://www.wolframalpha.com/input/?i=plot+24+*+sqrt(x)
    *
-   * @param  {int} distance
-   * @return {int} duration (in ms)
+   * @param  {Number} distance
+   * @return {Number} duration (in ms)
    */
-  const calcDuration = distance => {
+  const calcDuration = (distance) => {
     const coefficient = 24 * (1 / options.speed)
     return coefficient * Math.sqrt(Math.abs(distance))
   }
@@ -117,7 +118,7 @@ export const To = (options) => {
     } else {
       animate({
         duration: calcDuration(end - start),
-        loop (calcIncrement) {
+        loop(calcIncrement) {
           const distance = calcIncrement(start, end)
           scrollTheEl(distance)
         },

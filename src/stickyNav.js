@@ -12,16 +12,28 @@ export const StickyNav = () => {
   const nav = document.querySelector('.js-butr-nav')
   const parent = nav.parentElement
   const parentStyle = window.getComputedStyle(parent)
-  const parentSpaceTop = parseInt(parentStyle.getPropertyValue('padding-top'), 10)
-  const parentSpaceBottom = parseInt(parentStyle.getPropertyValue('padding-bottom'), 10)
+  const parentSpaceTop = parseInt(
+    parentStyle.getPropertyValue('padding-top'),
+    10
+  )
+  const parentSpaceBottom = parseInt(
+    parentStyle.getPropertyValue('padding-bottom'),
+    10
+  )
 
   /**
    * Calculate width of nav based on parent container
    * Function is debounced to prevent excessive calls during scroll
    */
   const setWidth = () => {
-    const paddingRight = parseInt(parentStyle.getPropertyValue('padding-right'), 10)
-    const paddingLeft = parseInt(parentStyle.getPropertyValue('padding-left'), 10)
+    const paddingRight = parseInt(
+      parentStyle.getPropertyValue('padding-right'),
+      10
+    )
+    const paddingLeft = parseInt(
+      parentStyle.getPropertyValue('padding-left'),
+      10
+    )
     const width = parseInt(parentStyle.getPropertyValue('width'), 10)
     nav.style.maxWidth = width - paddingLeft - paddingRight + 'px'
     nav.style.width = '100%'
@@ -31,10 +43,13 @@ export const StickyNav = () => {
    * Stick the navbar with position fixed
    */
   const setToStick = () => {
-    const cssString = ';'
-      + 'position: fixed; '
-      + 'top: ' + (State.topBuffer + parentSpaceTop) + 'px; '
-      + 'bottom: auto;'
+    const cssString =
+      ';' +
+      'position: fixed; ' +
+      'top: ' +
+      (State.topBuffer + parentSpaceTop) +
+      'px; ' +
+      'bottom: auto;'
     nav.style.cssText += cssString
   }
 
@@ -43,10 +58,13 @@ export const StickyNav = () => {
    * with the 'avoid' element option if it exists
    */
   const setToPark = () => {
-    const cssString = ';'
-      + 'position: absolute; '
-      + 'top: auto; '
-      + 'bottom: ' + parentSpaceBottom + 'px;'
+    const cssString =
+      ';' +
+      'position: absolute; ' +
+      'top: auto; ' +
+      'bottom: ' +
+      parentSpaceBottom +
+      'px;'
     nav.style.cssText += cssString
   }
 
@@ -54,10 +72,8 @@ export const StickyNav = () => {
    * Set the navbar to it's setToInitial, unmodified position
    */
   const setToInitial = () => {
-    let cssString = ';'
-      + 'position: relative; '
-      + 'top: auto; '
-      + 'bottom: auto;'
+    let cssString =
+      ';' + 'position: relative; ' + 'top: auto; ' + 'bottom: auto;'
     nav.style.cssText += cssString
   }
 
@@ -104,9 +120,12 @@ export const StickyNav = () => {
       }
     } else if (position === 'relative') {
       // If we are coming to the page far down where the nav can't fit, park it initially
-      if (parentBottom - parentSpaceBottom < nav.offsetHeight + State.topBuffer + parentSpaceTop) {
+      if (
+        parentBottom - parentSpaceBottom <
+        nav.offsetHeight + State.topBuffer + parentSpaceTop
+      ) {
         setToPark()
-      // If we are coming to the page a ways where the nav should be fixed do that initially
+        // If we are coming to the page a ways where the nav should be fixed do that initially
       } else if (navTop - State.topBuffer - parentSpaceTop <= 0) {
         setToStick()
       }
