@@ -19,19 +19,13 @@ module.exports = {
     {
       match: ['dist/*.js'],
       fn: (e, file) => {
-        fs.copyFile(
-          './dist/butr.js',
-          './example/butr.js',
-          e => { if (e) console.log(e) }
-        )
+        fs.copyFile('./dist/butr.js', './example/butr.js', (e) => {
+          if (e) console.log(e)
+        })
       }
     }
   ],
-  watchEvents: [
-    'change',
-    'add',
-    'addDir'
-  ],
+  watchEvents: ['change', 'add', 'addDir'],
   watch: true,
   proxy: 'localhost:5000',
   port: 3000,

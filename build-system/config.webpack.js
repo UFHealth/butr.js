@@ -1,23 +1,23 @@
-const path = require("path");
-const TerserPlugin = require("terser-webpack-plugin");
+const path = require('path')
+const TerserPlugin = require('terser-webpack-plugin')
 
-const isDev = process.env.NODE_ENV === "development";
-const mode = isDev ? "development" : "production";
-const devtool = isDev ? "eval" : false;
+const isDev = process.env.NODE_ENV === 'development'
+const mode = isDev ? 'development' : 'production'
+const devtool = isDev ? 'eval' : false
 
 module.exports = {
   mode,
   devtool,
   entry: {
-    Butr: "./src/butr.js",
+    Butr: './src/butr.js'
   },
   output: {
-    path: path.resolve(__dirname, "../dist"),
-    filename: "[name].js",
-    library: "[name]",
-    libraryTarget: "umd",
-    libraryExport: "default",
-    umdNamedDefine: true,
+    path: path.resolve(__dirname, '../dist'),
+    filename: '[name].js',
+    library: '[name]',
+    libraryTarget: 'umd',
+    libraryExport: 'default',
+    umdNamedDefine: true
   },
   module: {
     rules: [
@@ -25,26 +25,26 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
             presets: [
               [
-                "@babel/preset-env",
+                '@babel/preset-env',
                 {
-                  modules: false,
-                },
-              ],
-            ],
-          },
-        },
-      },
-    ],
+                  modules: false
+                }
+              ]
+            ]
+          }
+        }
+      }
+    ]
   },
   resolve: {
-    extensions: [".js", ".json"],
+    extensions: ['.js', '.json']
   },
   optimization: {
     minimize: !isDev,
-    minimizer: isDev ? false : [new TerserPlugin()],
-  },
-};
+    minimizer: isDev ? false : [new TerserPlugin()]
+  }
+}
