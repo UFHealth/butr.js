@@ -23,9 +23,10 @@ export const AutoSidebar = () => {
    * @param  {string} text
    * @return {string} Slugified text for use as an ID attribute.
    */
-  const generateId = text => {
+  const generateId = (text) => {
     // Generate ID from text
-    let generated = text.toLowerCase()
+    let generated = text
+      .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/(\d)\./g, '$1-')
       .replace(/[^\w-]+/g, '')
@@ -49,7 +50,7 @@ export const AutoSidebar = () => {
    * @param  {Node} heading Heading node.
    * @return {string} The #heading-hash.
    */
-  const createHash = heading => {
+  const createHash = (heading) => {
     if (!heading.id) heading.id = generateId(heading.textContent)
     return '#' + heading.id
   }
@@ -70,7 +71,9 @@ export const AutoSidebar = () => {
    */
   const checkRequiredElements = () => {
     if (!nav || !content || !headings) {
-      console.error('Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker')
+      console.error(
+        'Error: Missing required classes on nav, content, or headings. Aborted setup of Butr.marker'
+      )
       return false
     }
     return true
@@ -82,7 +85,7 @@ export const AutoSidebar = () => {
    * @param  {Node} heading Heading node.
    * @return {Number} Current heading level.
    */
-  const setCurrentLevel = heading => {
+  const setCurrentLevel = (heading) => {
     return parseInt(heading.tagName.substr(1)) - errorOffset
   }
 
@@ -92,7 +95,7 @@ export const AutoSidebar = () => {
    * @param  {Number} index Index of current heading.
    * @return {Number} Level of next heading.
    */
-  const setNextLevel = index => {
+  const setNextLevel = (index) => {
     return headings[index + 1]
       ? parseInt(headings[index + 1].tagName.substr(1)) - errorOffset
       : 0
@@ -104,7 +107,7 @@ export const AutoSidebar = () => {
    * @param  {Node} heading Heading node.
    * @return {object} Heading context data as a simple object.
    */
-  const createItem = heading => {
+  const createItem = (heading) => {
     return {
       label: heading.textContent.trim(),
       hash: createHash(heading),
@@ -158,7 +161,7 @@ export const AutoSidebar = () => {
    * @param  {Node} heading Heading node.
    * @return {Node} <li> element with appended anchor.
    */
-  const createNavItem = heading => {
+  const createNavItem = (heading) => {
     let li = document.createElement('li')
     let a = document.createElement('a')
     a.href = heading.hash
