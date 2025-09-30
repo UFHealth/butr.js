@@ -1,4 +1,3 @@
-import './polyfills'
 import { To } from './to'
 import { Marker } from './marker'
 import { AutoAnchors } from './autoAnchors'
