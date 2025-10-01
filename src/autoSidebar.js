@@ -61,7 +61,7 @@ export const AutoSidebar = () => {
   const getRequiredElements = () => {
     nav = document.querySelector('.js-butr-nav')
     content = document.querySelector('.js-butr-content')
-    headings = content.querySelectorAll('h2, h3, h4, h5, h6')
+    headings = content.querySelectorAll(':is(h2, h3, h4, h5, h6):not([data-butr-ignore])')
   }
 
   /**
