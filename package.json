@@ -1,6 +1,6 @@
 {
   "name": "butr",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Scroll like butter",
   "contributors": [
     "Bill Columbia <hello@billcolumbia.com>",
@@ -8,52 +8,32 @@
   ],
   "license": "MIT",
   "repository": "github:ufhealth/butr",
-  "main": "dist/butr.js",
+  "type": "module",
+  "main": "./dist/butr.umd.cjs",
+  "module": "./dist/butr.js",
   "files": [
     "src",
-    "dist/*.js"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/butr.js",
+      "require": "./dist/butr.umd.cjs"
+    }
+  },
   "scripts": {
-    "js:watch": "webpack -w --config build-system/config.webpack.js",
-    "js:build": "webpack --config build-system/config.webpack.js",
-    "js:lint": "eslint 'src/**/*.js' -c build-system/config.eslint.js",
-    "reload": "browser-sync start -c build-system/config.browsersync.js",
-    "dev": "NODE_ENV=development run-p example js:watch reload",
-    "build": "NODE_ENV=production run-s js:build",
-    "bam": "NODE_ENV=development webpack --config build-system/as-module.config.webpack.js",
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "preview": "bunx --bun vite preview",
     "bump": "shipit",
-    "post-bump": "npm install",
-    "release": "run-s \"bump {@}\" post-bump build --",
-    "example": "http-server \"./example\" -p 5000"
+    "post-bump": "bun install",
+    "release": "run-s \"bump {@}\" post-bump build --"
   },
   "browserslist": [
     "> 1% in US, ie 11"
   ],
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/polyfill": "^7.7.0",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "@ufhealth/shipit": "^0.2.1",
-    "babel-loader": "^8.0.6",
-    "browser-sync": "^2.26.7",
-    "classlist-polyfill": "^1.2.0",
-    "core-js": "^3.1.4",
-    "eslint": "^6.1.0",
-    "eslint-config-standard": "^13.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "glob": "^7.1.4",
-    "http-server": "^0.12.0",
-    "npm-run-all": "^4.1.5",
-    "object-assign": "^4.1.1",
-    "onchange": "^6.0.0",
-    "rev-hash": "^3.0.0",
-    "rimraf": "^2.6.3",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.38.0",
-    "webpack-cli": "^3.3.6"
+    "@ufhealth/shipit": "0.2.1",
+    "vite": "7.1.7"
   }
 }

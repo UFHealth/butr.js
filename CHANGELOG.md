@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 2.0.0
+
+**New**
+- Refactor to Bun and Vite
+
 ### 1.0.2
 
 **Fixed**
@@ -25,4 +30,3 @@
 - Fix marker height and position during transition to active links
 - Optimizations from @myleshyson on Sticky nav
 - Fixes on marker size and animations calculations from @friartuck6000
-
