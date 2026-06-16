@@ -34,6 +34,6 @@
   ],
   "devDependencies": {
     "@ufhealth/shipit": "0.2.1",
-    "vite": "7.1.7"
+    "vite": "7.3.5"
   }
 }
